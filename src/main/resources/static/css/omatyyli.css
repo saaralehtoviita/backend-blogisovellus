@@ -1,0 +1,258 @@
+/*Suomen lipun väri*/
+.color-fin {
+    background-color: #002F6C;
+}
+
+/*toinen sininen*/
+.color-cornblue {
+    background-color: #6495ED;
+}
+
+/*bavipalkin tyylittelyt*/
+.navbar-custom .nav-link  {
+    color: lightgrey;
+}
+
+.nav-link.active {
+    color: lightgrey;
+}
+
+.nav-link:hover {
+    background-color: rgba(100, 149, 237, 0.4);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.navbar-brand {
+    color: lightgrey;
+}
+
+.navbar-brand:hover {
+    background-color: rgba(100, 149, 237, 0.4);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+/*koko sivuston yhteiset tyylittelyt*/
+html, body {
+height: 100%;
+margin: 0;
+
+}
+
+body {
+display: flex;
+flex-direction: column;
+background: #edf6ff;
+}
+
+main {
+    flex: 1; /*täyttää jäljellä olevan tilan, vaaditaan sticky footeriin*/
+}
+
+/*Etusivun karuselli*/
+
+.carousel-item {
+    background-color: rgb(131, 154, 196);
+    opacity: 0.8;
+    height: 250px;
+    width: 100%;
+}
+
+.carousel-text {
+    margin-top: 5px;
+    color: rgb(10, 8, 8);
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-size: 18px;
+}
+
+/*About sivun tyylittelyt, tekstikentät ennen animaatiota näkymättömissä*/
+#about1, #about2, #about3 {
+    background-color: rgba(100, 149, 237, 0.4);
+    margin-top: 15px;
+    border-radius: 15px 50px;
+    padding: 15px;
+    opacity: 0;
+}
+
+/*Kuvat ennen animaatiota näkymättömissä*/
+#img-about1, #img-about2, #img-about3 {
+    opacity: 0;
+}
+
+/*Animaatiot eka rivi*/
+
+#img-about1 {
+    animation-name: imgAppear1;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes imgAppear1 {
+    to {
+        opacity: 1;
+    }
+}
+
+#about1 {
+    animation-name: aboutAppear2;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-delay: 1s;
+}
+
+@keyframes aboutAppear2 {
+    to {
+        opacity: 1;
+    }
+}
+
+/*Animaatiot toka rivi*/
+#img-about2 {
+    animation-name: imgAppear3;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-delay: 2s;
+}
+
+@keyframes imgAppear3 {
+    to {
+        opacity: 1;
+    }
+}
+
+#about2 {
+    animation-name: aboutAppear4;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-delay: 3s;
+}
+
+@keyframes aboutAppear4 {
+    to {
+        opacity: 1;
+    }
+}
+
+/*Animaatiot kolmas rivi*/
+#img-about3 {
+    animation-name: imgAppear5;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-delay: 4s;
+}
+
+@keyframes imgAppear5 {
+    to {
+        opacity: 1;
+    }
+}
+
+#about3 {
+    animation-name: aboutAppear6;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-delay: 5s;
+}
+
+@keyframes aboutAppear6 {
+    to {
+        opacity: 1;
+    }
+}
+
+/*Napin animaatiot*/
+#buttonAbout {
+    opacity: 0;
+    animation-name: buttonAppear;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-delay: 6s;
+}
+
+@keyframes buttonAppear {
+    to {
+        opacity: 1;
+    }
+    
+}
+
+/*Nappien tyylittelyt, hoverilla suurempi ja taustaväri muuttuu*/
+
+.btn {
+    background-color: #6495ED;
+}
+
+.btn:hover {
+    transform: scale(1.1);
+    transition: 0.3s;
+    background-color: #002F6C;
+    color: white;
+}
+
+/*Accordion tyylittelyt (MPF-training ja My services-sivut*/
+
+.accordion-button, .accordion-button:not(.collapsed) {
+    background-color:#002F6C;
+    color: lightgrey;
+}
+
+.accordion-item {
+    background-color:rgb(189, 213, 235);
+}
+
+/*lista-itemit*/
+
+#list-keyword {
+    list-style-type: none;
+}
+
+
+
+/*footerin tyylittelyt*/
+footer {
+    width: 100%;
+    color: lightgrey;
+    margin-top: auto;
+    background-color: #002F6C;
+    text-align: center;
+    padding: 3rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  
+}
+
+footer .social-media {
+    display: flex;
+    gap: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    footer .social-media {
+        display: block;
+    }
+}
+
+footer .social-media a {
+    text-decoration: none;
+    color: lightgrey;          /* Linkkien väri */
+}
+
+footer .social-media .insta-link:hover {
+    background-color: #d62976;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+footer .social-media .youtube-link:hover {
+    background-color: #FF0033;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+
+

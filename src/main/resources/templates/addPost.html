@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Writing a blogpost</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/omatyyli.css">
+</head>
+<!--Tämä sivu aukeaa vain sisäänkirjautuneelle käyttäjälle.
+Käyttäjä kirjoittaa ja tallentaa tällä sivulla uusia postauksia-->
+<body class="ml-4">
+    <h1>New Blogpost</h1>
+    <p>Please, write your post in the form below. If you want your text to be <strong>bold</strong> or <i>italic</i>, use the following syntax: <br>
+    **content you want bolded**.<br>
+    _content you want italic_</p>
+    <form th:object="${post}" th:action="@{/savePost}" action="#" method="post">
+        <div class="mb-3">
+            <label for="title">Title of Post</label>
+                <input type="text" id="title" th:field="*{title}" />
+                    <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger">Error</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="text">Content</label>
+                <textarea id="text" th:field="*{text}" class="form-control w-75" rows="15"></textarea>
+                    <div th:if="${#fields.hasErrors('text')}" th:errors="*{text}" class="text-danger">Error</div>
+        </div>
+
+        
+<!--     <form th:action="@{/addKeywordToPost}" method="post" th:object="${post}">
+        <div class="mb-3">
+        <label for="keywordInput">Add keyword</label>
+                <input type="text" id="keywordInput" th:field="*{keywordInput}" />
+                <input type="hidden" th:field="*{title}" />
+                <input type="hidden" th:field="*{text}" />
+                <input type="hidden" th:field="*{postDate}" />
+                <button type="submit" class="btn btn-sm">Add keyword</button>
+        </div>
+    </form> -->
+    <input type="submit" value="Save Post" class="btn btn-success mt-2">
+
+
+        <!--Lomakkeeseen ei tarvitse täydentää postauksen kirjoittajan tietoja, ne täydentyvät automaattisesti sisäänkirjautuneen käyttäjän tiedoista-->
+    </form>
+</body>
+</html>
