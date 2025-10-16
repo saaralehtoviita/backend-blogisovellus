@@ -10,17 +10,16 @@
 <body>
     <div class="container mt-4">
     <h1 th:text="${post.title}"></h1>
-    <p><strong>Päivämäärä:</strong> <span th:text="${post.postDate}"></span></p>
+    <p><strong>Date:</strong> <span th:text="${post.postDate}"></span></p>
     <hr>
     <p th:utext="${post.text}"></p>
+    <p><strong>Writer: </strong><span th:text="${post.writer.lastName + ', ' + post.writer.firstName}"></span></p>
 
-    <h4>Avainsanat:</h4>
-    <ul>
-        <li th:each="pk : ${post.postKeywords}" th:text="${pk.keyword.strKeyword}"></li>
-    </ul>
+    <p><strong>Keywords:</strong> 
+        <span th:each="pk, stat : ${post.postKeywords}" 
+        th:text="${pk.keyword.strKeyword + (stat.last ? '' : ', ')}"></span><p>
     <a href="/postlist" class="btn w-auto">Takaisin listaukseen</a>
     </div>
     
-
 </body>
 </html>

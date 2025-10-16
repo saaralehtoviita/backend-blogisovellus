@@ -95,6 +95,7 @@ public class PostController {
         .replaceAll("\n", "<br>");
         post.setText(inputText);
 
+        //tallennetaan ensin post-olio repoon ilman avainsanoja
         pRepo.save(post);
 
         //avainsanojen lisääminen
@@ -128,13 +129,17 @@ public class PostController {
             return "redirect:/postlistEdit";
         }
 
+        //haetaan postauksen keywordit ja tehdään niistä merkkijono, pilkku erottimena
         String keywords = post.getPostKeywords().stream()
             .map(pk -> pk.getKeyword().getStrKeyword())
             .collect(Collectors.joining(", "));
-        
+    
+        //asetetaan keywords-merkkijono inputin paikalle
         post.setKeywordInput(keywords);
+        //lisätään modelille post-olio, täytyy vastata thymeleafista löytyvää tietoa 
         model.addAttribute("post", post);
-        model.addAttribute("keywords", kRepo.findAll());
+        //lisätään modelille avainsana-repon kaikki tiedot
+        //model.addAttribute("keywords", kRepo.findAll()); turha askel, koska käytetään myöhemmin keywordInputia 
         return "editPost";
     }
 
@@ -145,7 +150,7 @@ public class PostController {
     public String saveEditedPost(@Valid @ModelAttribute("post") Post editedPost, BindingResult br, Model model) {
         logger.info("Edited post id ={}", editedPost.getPostId());
         if (br.hasErrors()) {
-            model.addAttribute("keywords", kRepo.findAll());
+            //model.addAttribute("keywords", kRepo.findAll());
             return "editPost";
         }
 
@@ -154,33 +159,35 @@ public class PostController {
         Post existingPost = pRepo.findById(editedPost.getPostId())
             .orElseThrow(() -> new IllegalArgumentException("Post not found with id " + editedPost.getPostId()));
 
+        //asetetaan postauksen otsikko 
         existingPost.setTitle(editedPost.getTitle());
 
+        //haetaan postauksen teksti ja muotoillaan se
         String formattedText = editedPost.getText().trim()
             .replaceAll("\\*\\*(.*?)\\*\\*", "<strong>$1</strong>")
             .replaceAll("\\_\\_(._?)\\_\\_", "<i>$1</i>")
             .replaceAll("\n", "<br>");
         
+        //asetetaan muotoilti teksti postauksen sisällöksi
         existingPost.setText(formattedText);
 
+        //asetetaan postauksen kirjoittaja 
         existingPost.setWriter(editedPost.getWriter());
 
+        //tallennetaan postaus repoon
         existingPost = pRepo.save(existingPost);
 
+        //poistetaan kaikki postaukseen liitetyt postkeyword-oliot jotta voidaan lisätä uudet
         pAndKRepo.deleteAllByPost(existingPost);
-
-/*         List<PostKeyword> oldPKs = pAndKRepo.findAllByPost(existingPost);
-        pAndKRepo.deleteAll(oldPKs); */
 
         //avainsanojen lisääminen
         //käyttäjän antamasta syötteestä tehdään merkkijonotaulukko, pilkku erottimena
-        //poistetaan tyhjät ja muutetaan pieneksi
         if (editedPost.getKeywordInput() != null && !editedPost.getKeywordInput().isBlank()) {
         String[] keywords = editedPost.getKeywordInput().split(",");
         for (String k : keywords) {
-            String newKw = k.trim().toLowerCase();
+            String newKw = k.trim().toLowerCase(); //poistetaan tyhjät ja muutetaan pieneksi
             Keyword kw = kRepo.findByStrKeyword(newKw).orElseGet(() ->
-            kRepo.save(new Keyword(newKw)));
+            kRepo.save(new Keyword(newKw))); //tehdään uusi keyword, jos sitä ei löydy reposta
             //luodaan uusi postkeyword-olio ja tallennetaan se repoon
             PostKeyword pk = new PostKeyword(existingPost, kw);
             pAndKRepo.save(pk);
