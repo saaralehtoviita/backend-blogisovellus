@@ -1,8 +1,12 @@
 package backend25.blogisovellus.web;
 
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,10 +23,13 @@ import backend25.blogisovellus.domain.Post;
 import backend25.blogisovellus.domain.PostKeyword;
 import backend25.blogisovellus.domain.PostKeywordRepository;
 import backend25.blogisovellus.domain.PostRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Controller
 public class PostController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
     //rajapintojen injektointi, tarvitaan, jotta tiedot tallentuvat tietokantaan
 
@@ -36,6 +43,7 @@ public class PostController {
         this.pAndKRepo = pAndKRepo;
     }
 
+    //KAIKILLE KÄYTTÄJILLE
     @ResponseBody
     @GetMapping("/index")
     public String testi() {
@@ -58,6 +66,8 @@ public class PostController {
         model.addAttribute("post", postaus);
         return "post";
     }
+
+    //SISÄÄNKIRJAUTUNEILLE KÄYTTÄJILLE
 
     //uusien postausten lisääminen
     //muutetaan jossain vaiheessa sellaiseksi, että vain sisäänkirjautuneet käyttäjät pääsevät lisäämään postauksia
@@ -109,6 +119,79 @@ public class PostController {
         return "redirect:postlist";     
     }
 
+    //postauksen editoiminen, tämä ei vielä tallenna postausta vaan avaa lomakkeen 
+    //oikea post-olio haetaan id:n perusteella
+    @RequestMapping("/editPost/{id}")
+    public String editPost(@PathVariable Long id, Model model) {
+        Post post = pRepo.findById(id).orElse(null);
+        if (post == null) {
+            return "redirect:/postlistEdit";
+        }
+
+        String keywords = post.getPostKeywords().stream()
+            .map(pk -> pk.getKeyword().getStrKeyword())
+            .collect(Collectors.joining(", "));
+        
+        post.setKeywordInput(keywords);
+        model.addAttribute("post", post);
+        model.addAttribute("keywords", kRepo.findAll());
+        return "editPost";
+    }
+
+    //editoidun postauksen tallentaminen
+    //ModelAttribute varmistaa, että oikea post-olio pysyy mukana 
+    @PostMapping("/saveEditedPost")
+    @Transactional //varmistaa, että tiedot tallentuvat samalla kertaa tietokantaan
+    public String saveEditedPost(@Valid @ModelAttribute("post") Post editedPost, BindingResult br, Model model) {
+        logger.info("Edited post id ={}", editedPost.getPostId());
+        if (br.hasErrors()) {
+            model.addAttribute("keywords", kRepo.findAll());
+            return "editPost";
+        }
+
+        //alkuperäisen postauksen hakeminen reposta
+        //asetetaan parametrina saadun editedPostin tiedot id:n perusteella existingPost-oliolle
+        Post existingPost = pRepo.findById(editedPost.getPostId())
+            .orElseThrow(() -> new IllegalArgumentException("Post not found with id " + editedPost.getPostId()));
+
+        existingPost.setTitle(editedPost.getTitle());
+
+        String formattedText = editedPost.getText().trim()
+            .replaceAll("\\*\\*(.*?)\\*\\*", "<strong>$1</strong>")
+            .replaceAll("\\_\\_(._?)\\_\\_", "<i>$1</i>")
+            .replaceAll("\n", "<br>");
+        
+        existingPost.setText(formattedText);
+
+        existingPost.setWriter(editedPost.getWriter());
+
+        existingPost = pRepo.save(existingPost);
+
+        pAndKRepo.deleteAllByPost(existingPost);
+
+/*         List<PostKeyword> oldPKs = pAndKRepo.findAllByPost(existingPost);
+        pAndKRepo.deleteAll(oldPKs); */
+
+        //avainsanojen lisääminen
+        //käyttäjän antamasta syötteestä tehdään merkkijonotaulukko, pilkku erottimena
+        //poistetaan tyhjät ja muutetaan pieneksi
+        if (editedPost.getKeywordInput() != null && !editedPost.getKeywordInput().isBlank()) {
+        String[] keywords = editedPost.getKeywordInput().split(",");
+        for (String k : keywords) {
+            String newKw = k.trim().toLowerCase();
+            Keyword kw = kRepo.findByStrKeyword(newKw).orElseGet(() ->
+            kRepo.save(new Keyword(newKw)));
+            //luodaan uusi postkeyword-olio ja tallennetaan se repoon
+            PostKeyword pk = new PostKeyword(existingPost, kw);
+            pAndKRepo.save(pk);
+        }
+        }
+        return "redirect:postlistEdit"; 
+
+    }
+
+
+
     //METODIT ADMIN OIKEUKSILLE:
 
     //postauksen poistaminen
@@ -125,10 +208,5 @@ public class PostController {
         model.addAttribute("posts", pRepo.findAll());
         return "postlistEdit";
     }
-
-
-
-
-
 
 }

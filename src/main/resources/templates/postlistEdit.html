@@ -35,10 +35,12 @@
             </td>
             <td>
                 <form th:action="@{/deletePost/{id}(id=${postaus.postId})}" method="post">
-                <button type="submit" class="btn btn-danger">Delete post</button>
+                <button type="submit" class="btn btn-sm btn-delete">Delete post</button>
                 </form>
+                    <a class="btn btn-sm btn-edit mt-2" th:href="@{/editPost/{id}(id=${postaus.postId})}">Edit post</a>
             </td>
         </tr>
     </table>
+    <a href="/addPost" class="btn">Write post</a>
 </body>
 </html>

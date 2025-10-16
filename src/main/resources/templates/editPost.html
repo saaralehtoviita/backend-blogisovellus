@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/omatyyli.css">
 </head>
-<!--Tämä sivu aukeaa vain sisäänkirjautuneelle käyttäjälle.
-Käyttäjä kirjoittaa ja tallentaa tällä sivulla uusia postauksia-->
+<!--Tämä sivu aukeaa vain sisäänkirjautuneelle käyttäjälle. Tällä sivulla editoitaan jo kirjoitettua postausta-->
 <body class="ml-4">
-    <h1>New Blogpost</h1>
+    <h1>Edit Blogpost</h1>
     <p>Please, write your post in the form below. If you want your text to be <strong>bold</strong> or <i>italic</i>, use the following syntax: <br>
     **content you want bolded**.<br>
     _content you want italic_</p>
-    <form th:object="${post}" th:action="@{/savePost}" action="#" method="post">
+    <form th:object="${post}" th:action="@{/saveEditedPost}" method="post">
+        <input type="hidden" th:field="*{postId}" />
         <div class="mb-3">
             <label for="title">Title of Post:</label>
                 <input type="text" id="title" th:field="*{title}" />

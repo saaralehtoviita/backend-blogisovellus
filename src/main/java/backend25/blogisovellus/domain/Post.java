@@ -84,6 +84,10 @@ public class Post {
         this.keywordInput = keywordInput;
     }
 
+    public void setPostId(Long postId) {
+        this.postId = postId;
+    }
+
     public Long getPostId() {
         return postId;
     }

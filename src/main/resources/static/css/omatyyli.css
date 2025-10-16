@@ -192,6 +192,28 @@ main {
     color: white;
 }
 
+.btn-delete {
+    background-color: #FF0033;
+}
+
+.btn-delete:hover {
+    transform: scale(1.1);
+    transition: 0.3s;
+    background-color: #ad0c2c;
+    color: rgb(53, 49, 49);
+}
+
+.btn-edit {
+    background-color: rgb(19, 170, 19);
+}
+
+.btn-edit:hover {
+    transform: scale(1.1);
+    transition: 0.3s;
+    background-color: rgb(18, 77, 18);
+    color: grey;
+}
+
 /*Accordion tyylittelyt (MPF-training ja My services-sivut*/
 
 .accordion-button, .accordion-button:not(.collapsed) {
