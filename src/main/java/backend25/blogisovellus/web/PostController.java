@@ -106,9 +106,24 @@ public class PostController {
             PostKeyword pk = new PostKeyword(post, doesExist);
             pAndKRepo.save(pk);
         }
-        return "redirect:postlist";
+        return "redirect:postlist";     
+    }
 
-        
+    //METODIT ADMIN OIKEUKSILLE:
+
+    //postauksen poistaminen
+    //muista vaihtaa oikeudet vain adminille!
+
+    @PostMapping("/deletePost/{id}")
+    public String deletePost(@PathVariable Long id) {
+        pRepo.deleteById(id);
+        return "redirect:/postlistEdit";
+    }
+
+    @GetMapping("/postlistEdit")
+    public String postListEdit(Model model) {
+        model.addAttribute("posts", pRepo.findAll());
+        return "postlistEdit";
     }
 
 
