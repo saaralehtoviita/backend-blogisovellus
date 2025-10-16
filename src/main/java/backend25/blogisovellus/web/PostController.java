@@ -86,6 +86,26 @@ public class PostController {
         post.setText(inputText);
 
         pRepo.save(post);
+
+        //avainsanojen lisääminen
+        //käyttäjän antamasta syötteestä tehdään merkkijonotaulukko, pilkku erottimena
+        //poistetaan tyhjät ja muutetaan pieneksi
+        String[] keywords = post.getKeywordInput().split(",");
+        for (String k : keywords) {
+            String newKw = k.trim().toLowerCase();
+
+            //tarkistetaan, löytyykö sana jo keyword reposta
+            //jos ei löydy, tehdään uusi sana ja tallennetaan repoon
+            Keyword doesExist = kRepo.findByStrKeyword(newKw).orElse(null);
+            if (doesExist == null) {
+                doesExist = new Keyword(newKw);
+                kRepo.save(doesExist);
+            }
+
+            //luodaan uusi postkeyword-olio ja tallennetaan se repoon
+            PostKeyword pk = new PostKeyword(post, doesExist);
+            pAndKRepo.save(pk);
+        }
         return "redirect:postlist";
 
         

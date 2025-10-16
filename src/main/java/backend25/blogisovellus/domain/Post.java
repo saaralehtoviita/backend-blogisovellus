@@ -45,8 +45,10 @@ public class Post {
     @JoinColumn(name="appuser_id")
     private AppUser writer;
 
-    //@Transient
-    //private String keywordInput; // väliaikainen kenttä avainsanoille 
+/*     @NotEmpty(message = "A post must have at least one keyword")
+    @Size(min = 1, max = 250) */
+    @Transient
+    private String keywordInput; // väliaikainen kenttä avainsanoille 
 
     //kun luodaan post-olio, tallentuu sille automaattisesti sen hetkinen päivämäärä
     public Post() {
@@ -69,6 +71,17 @@ public class Post {
         this.postDate = LocalDate.now().toString();
         this.postKeywords = postKeywords;
         this.writer = writer;
+    }
+
+    
+
+    public Post(String title, String text, String postDate, Set<PostKeyword> postKeywords, AppUser writer, String keywordInput) {
+        this.title = title;
+        this.text = text;
+        this.postDate = postDate;
+        this.postKeywords = postKeywords;
+        this.writer = writer;
+        this.keywordInput = keywordInput;
     }
 
     public Long getPostId() {
@@ -111,13 +124,13 @@ public class Post {
         this.postKeywords = postKeywords;
     }
 
-/*     public String getKeywordInput() {
+    public String getKeywordInput() {
         return keywordInput;
     }
 
     public void setKeywordInput(String keywordInput) {
         this.keywordInput = keywordInput;
-    } */
+    } 
 
     public AppUser getWriter() {
         return writer;
