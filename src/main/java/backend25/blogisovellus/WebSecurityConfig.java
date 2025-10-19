@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -33,6 +34,7 @@ public class WebSecurityConfig {
             .requestMatchers(HttpMethod.GET, "/postlist").permitAll()
             .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll()
             .requestMatchers(HttpMethod.POST, "/addPost").hasAuthority("USER")
+            .requestMatchers(HttpMethod.GET, "/postlist_username").hasAuthority("USER")
             .requestMatchers(HttpMethod.POST, "/postlistEdit").hasAuthority("ADMIN")
             .requestMatchers("/h2-console/").permitAll()
             .anyRequest().authenticated()) //tekee postmaniin login-toiminnon
@@ -40,13 +42,19 @@ public class WebSecurityConfig {
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions
                 .disable())) //h2-konsoli ei toimi ilman tätä
             .formLogin(formlogin -> formlogin //springin default-kirjautumissivu
-                .defaultSuccessUrl("/postlistEdit", true) //mihin tullaan onnistuneen kirjautumisen jälkeen
+                //.defaultSuccessUrl("/postlistEdit", true) //mihin tullaan onnistuneen kirjautumisen jälkeen
+                .successHandler(customSuccessHandler())
                 .permitAll())
             .logout(logout -> logout.permitAll())
             .csrf(csrf -> csrf.disable());
 
         return http.build();
 
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler customSuccessHandler() {
+        return new CustomAuthenticationSuccessHandler();
     }
 
 }

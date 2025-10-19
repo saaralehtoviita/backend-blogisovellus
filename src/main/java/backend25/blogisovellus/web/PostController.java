@@ -219,7 +219,7 @@ public class PostController {
     //muista vaihtaa oikeudet vain adminille!
 
     @PostMapping("/deletePost/{id}")
-    @PreAuthorize("hasAthority('ADMIN')") //postgren kanssa hasRole
+    @PreAuthorize("hasAuthority('ADMIN')") //postgren kanssa hasRole
     public String deletePost(@PathVariable Long id) {
         pRepo.deleteById(id);
         return "redirect:/postlistEdit";
