@@ -31,6 +31,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(
             authorize -> authorize
             .requestMatchers(HttpMethod.GET, "/postlist").permitAll()
+            .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll()
+            .requestMatchers(HttpMethod.POST, "/addPost").hasAuthority("USER")
             .requestMatchers(HttpMethod.POST, "/postlistEdit").hasAuthority("ADMIN")
             .requestMatchers("/h2-console/").permitAll()
             .anyRequest().authenticated()) //tekee postmaniin login-toiminnon

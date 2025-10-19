@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -69,12 +70,24 @@ public class PostController {
 
     //SISÄÄNKIRJAUTUNEILLE KÄYTTÄJILLE
 
+    @GetMapping("/postlist_username/{userName}")
+    public String showPostsByUserName(@PathVariable String userName, Model model) {
+        List<Post> postsByUserName = pRepo.findPostByWriterUserName(userName);
+        userName = "user";
+        for (Post p : postsByUserName) {
+            System.out.println(p);
+        }
+        model.addAttribute("postsByUsername", postsByUserName);
+        return "postlist_username";
+    }
+
     //uusien postausten lisääminen
     //muutetaan jossain vaiheessa sellaiseksi, että vain sisäänkirjautuneet käyttäjät pääsevät lisäämään postauksia
     //model-olion avulla välitetään selaimelle (thymeleaf) uusi Post olio (nimellä post)
     //samalla tavalla välitetään koko krepon sisältö selaimelle nimellä keywords
     //addPost ei vielä tallenna mitään
     @RequestMapping("/addPost")
+    @PreAuthorize("hasAuthority('USER')")
     public String addPost(Model model) {
         model.addAttribute("post", new Post());
         model.addAttribute("keyword", new Keyword());
@@ -83,6 +96,7 @@ public class PostController {
     }
     //valid + bindingresult tutkivat, rikkooko tallentumassa oleva postaus sääntöjä 
     @PostMapping("/savePost")
+    @PreAuthorize("hasAuthority('USER')")
     public String savePost(@Valid @ModelAttribute("post") Post post, BindingResult br) {
         if (br.hasErrors()) {
             return "addPost";
@@ -205,6 +219,7 @@ public class PostController {
     //muista vaihtaa oikeudet vain adminille!
 
     @PostMapping("/deletePost/{id}")
+    @PreAuthorize("hasAthority('ADMIN')") //postgren kanssa hasRole
     public String deletePost(@PathVariable Long id) {
         pRepo.deleteById(id);
         return "redirect:/postlistEdit";

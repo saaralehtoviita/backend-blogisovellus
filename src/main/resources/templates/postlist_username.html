@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"></html>>
+<head>
+    <title>Blogpost listing</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/omatyyli.css">
+    <script src="/js/bootstrap.bundle.min.js"></script>
+</head>
+<!--Blogipostaukset käyttäjätunnuksen mukaan-->
+<body class="ml-4 mt-4">
+    <h1 class="mt-4">Blogposts by user X</h1>
+    <p>Welcome user <i sec:authentication="name"></i>! On this page you can  see a list of your own posts and edit them.</p>
+    <table class="table table-striped">
+        <!--Otsikkorivi-->
+        <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Keywords</th>      
+        </tr>
+        <!--Postausten tiedot-->
+                <tr th:each = "postaus : ${postsByUsername}">
+                <td><a th:text="${postaus.title}" th:href="@{/post/{id}(id=${postaus.postId})}"></a>
+                </td>
+            <td th:text="${postaus.postDate}"></td>
+            <!-- <td th:text="${postaus.writer != null ? postaus.writer.firstName + ' ' + postaus.writer.lastName : 'Unknown'}"></td> -->
+            <td>
+                <ul id="list-keyword" th:if="${#lists.size(postaus.postKeywords) > 0}">
+                    <li th:each="pk : ${postaus.postKeywords}" th:text="${pk.keyword.strKeyword}"></li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
