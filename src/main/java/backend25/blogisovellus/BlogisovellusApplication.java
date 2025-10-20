@@ -46,7 +46,7 @@ public class BlogisovellusApplication {
 
 	AppUser u1 = new AppUser("Testi", "Testinen", "user", "$2a$10$91d8dtRJvcEbqonif/vtKuod24Sudu4OVfLBa5muyDaiaDLRl5F9i", "USER");
 	AppUser a = new AppUser("Admintesti", "AdminTestinen", "admin", "$2a$10$v9iDxguTwkaQm8utbKaCLuwxir/UNJj7sgUUFHOAdCEDuMqlp7MUC", "ADMIN");
-	AppUser u2 = new AppUser("Elli", "Esimerkki", "elliuser", "$2a$10$yde1hErHcejSiybe19RsLutSoUgQu8r9ZsQjvkSgGytAPp1k6wO86", "USER");
+	AppUser u2 = new AppUser("Elli", "Esimerkki", "elliuser", "$2a$10$PHKydfpA9E.1YzZcpMXMdOfiMqItqFFNIjvh1iwy3u1pm/akXp4o6", "USER");
 	
 	//tallennetaan käyttäjät repoon
 	uRepo.save(u1);
