@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/omatyyli.css">
     <script src="/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 <!--Blogipostaukset käyttäjätunnuksen mukaan-->
 <body class="ml-4 mt-4">
@@ -18,7 +19,8 @@
         <tr>
             <th>Title</th>
             <th>Date</th>
-            <th>Keywords</th>      
+            <th>Keywords</th>  
+            <th>Functions</th>    
         </tr>
         <!--Postausten tiedot-->
                 <tr th:each = "postaus : ${postsByUserName}">
@@ -31,8 +33,18 @@
                     <li th:each="pk : ${postaus.postKeywords}" th:text="${pk.keyword.strKeyword}"></li>
                 </ul>
             </td>
+            <td><a class="btn btn-sm btn-edit mt-2" th:href="@{/editPost/{id}(id=${postaus.postId})}">Edit post</a></td>
         </tr>
     </table>
-    <a href="/addPost" class="btn">Write new post!</a>
+    <form th:action="@{/addPost}" method="post">
+        <button type="submit" class="btn">
+            <i class="bi bi-pencil-square"></i> Write new post</button>
+    </form>
+    <!-- <a href="/addPost" class="btn w-auto">Write new post!</a> -->
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-signout mt-2">
+          <i class="bi bi-box-arrow-right"></i> Sign out</button>  
+    </form>
+
 </body>
 </html>

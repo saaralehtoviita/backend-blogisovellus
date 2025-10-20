@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title th:text="${post.title}">Postaus</title>
     <meta charset="UTF-8">
@@ -18,7 +18,8 @@
     <p><strong>Keywords:</strong> 
         <span th:each="pk, stat : ${post.postKeywords}" 
         th:text="${pk.keyword.strKeyword + (stat.last ? '' : ', ')}"></span><p>
-    <a href="/postlist" class="btn w-auto">Takaisin listaukseen</a>
+    <a href="/postlist" class="btn w-auto">Back to listing</a>
+    <a sec:authorize="hasAuthority('USER')" th:href="@{/postlist_username/{userName}(userName=${post.writer.userName})}" class="btn w-auto">Back to your posts</a>
     </div>
     
 </body>
