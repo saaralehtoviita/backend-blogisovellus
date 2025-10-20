@@ -20,7 +20,7 @@
         th:text="${pk.keyword.strKeyword + (stat.last ? '' : ', ')}"></span><p>
     <a href="/postlist" class="btn w-auto">Back to listing</a>
     <a sec:authorize="hasAuthority('USER')" th:href="@{/postlist_username/{userName}(userName=${post.writer.userName})}" class="btn w-auto">Back to your posts</a>
-    </div>
-    
+    <a sec:authorize="hasAuthority('ADMIN')" th:href="@{/postlistEdit}" class="btn w-auto">Back to admin main page</a>
+    </div>   
 </body>
 </html>

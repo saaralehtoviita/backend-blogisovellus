@@ -1,8 +1,8 @@
 package backend25.blogisovellus.web;
 
 import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
+//import java.util.HashSet;
+//import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -148,6 +148,7 @@ public class PostController {
     //postauksen editoiminen, tämä ei vielä tallenna postausta vaan avaa lomakkeen 
     //oikea post-olio haetaan id:n perusteella
     @RequestMapping("/editPost/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')") //anyauthority mahdollistaa useamman roolin
     public String editPost(@PathVariable Long id, Model model) {
         Post post = pRepo.findById(id).orElse(null);
         if (post == null) {
@@ -171,8 +172,9 @@ public class PostController {
     //editoidun postauksen tallentaminen
     //ModelAttribute varmistaa, että oikea post-olio pysyy mukana 
     @PostMapping("/saveEditedPost")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @Transactional //varmistaa, että tiedot tallentuvat samalla kertaa tietokantaan
-    public String saveEditedPost(@Valid @ModelAttribute("post") Post editedPost, BindingResult br, Model model) {
+    public String saveEditedPost(@Valid @ModelAttribute("post") Post editedPost, BindingResult br, Model model, Authentication authentication) {
         logger.info("Edited post id ={}", editedPost.getPostId());
         if (br.hasErrors()) {
             //model.addAttribute("keywords", kRepo.findAll());
@@ -197,7 +199,7 @@ public class PostController {
         existingPost.setText(formattedText);
 
         //asetetaan postauksen kirjoittaja 
-        existingPost.setWriter(editedPost.getWriter());
+        //existingPost.setWriter(editedPost.getWriter());
 
         //tallennetaan postaus repoon
         existingPost = pRepo.save(existingPost);
@@ -218,7 +220,12 @@ public class PostController {
             pAndKRepo.save(pk);
         }
         }
-        return "redirect:postlistEdit"; 
+        if (authentication.getAuthorities().stream().anyMatch(a ->
+        a.getAuthority().equals("ADMIN"))) { 
+        return "redirect:/postlistEdit";
+        } else {
+            return "redirect:postlist_username/" + authentication.getName();
+        }
 
     }
 
