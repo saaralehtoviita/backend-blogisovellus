@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"></html>>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Blogpost listing</title>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
 </head>
 <!--Blogipostaukset käyttäjätunnuksen mukaan-->
 <body class="ml-4 mt-4">
-    <h1 class="mt-4">Blogposts by user X</h1>
+    <h1 class="mt-4">Blogposts by <i sec:authentication="name"></i></h1>
     <p>Welcome user <i sec:authentication="name"></i>! On this page you can  see a list of your own posts and edit them.</p>
     <table class="table table-striped">
         <!--Otsikkorivi-->
@@ -21,7 +21,7 @@
             <th>Keywords</th>      
         </tr>
         <!--Postausten tiedot-->
-                <tr th:each = "postaus : ${postsByUsername}">
+                <tr th:each = "postaus : ${postsByUserName}">
                 <td><a th:text="${postaus.title}" th:href="@{/post/{id}(id=${postaus.postId})}"></a>
                 </td>
             <td th:text="${postaus.postDate}"></td>

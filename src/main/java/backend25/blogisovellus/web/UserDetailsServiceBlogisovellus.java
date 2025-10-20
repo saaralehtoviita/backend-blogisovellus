@@ -21,7 +21,7 @@ public class UserDetailsServiceBlogisovellus implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        AppUser curruser = repository.findByUserName(userName);
+        AppUser curruser = repository.findByUserName(userName).orElse(null);
         UserDetails user = new org.springframework.security.core.userdetails.User(userName, curruser.getPasswordHashed(), 
         		AuthorityUtils.createAuthorityList(curruser.getRole()));
         return user;

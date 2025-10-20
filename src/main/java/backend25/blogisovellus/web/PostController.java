@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import backend25.blogisovellus.domain.AppUser;
+import backend25.blogisovellus.domain.AppUserRepository;
 import backend25.blogisovellus.domain.Keyword;
 import backend25.blogisovellus.domain.KeywordRepository;
 import backend25.blogisovellus.domain.Post;
@@ -26,6 +28,7 @@ import backend25.blogisovellus.domain.PostKeywordRepository;
 import backend25.blogisovellus.domain.PostRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 
 @Controller
 public class PostController {
@@ -37,11 +40,13 @@ public class PostController {
     private PostRepository pRepo;
     private KeywordRepository kRepo;
     private PostKeywordRepository pAndKRepo;
+    private AppUserRepository uRepo;
 
-    public PostController(PostRepository pRepo, KeywordRepository kRepo, PostKeywordRepository pAndKRepo) {
+    public PostController(PostRepository pRepo, KeywordRepository kRepo, PostKeywordRepository pAndKRepo, AppUserRepository uRepo) {
         this.pRepo = pRepo;
         this.kRepo = kRepo;
         this.pAndKRepo = pAndKRepo;
+        this.uRepo = uRepo;
     }
 
     //KAIKILLE KÄYTTÄJILLE
@@ -72,12 +77,9 @@ public class PostController {
 
     @GetMapping("/postlist_username/{userName}")
     public String showPostsByUserName(@PathVariable String userName, Model model) {
+        //String userName = authentication.getName();
         List<Post> postsByUserName = pRepo.findPostByWriterUserName(userName);
-        userName = "user";
-        for (Post p : postsByUserName) {
-            System.out.println(p);
-        }
-        model.addAttribute("postsByUsername", postsByUserName);
+        model.addAttribute("postsByUserName", postsByUserName);
         return "postlist_username";
     }
 
@@ -97,10 +99,17 @@ public class PostController {
     //valid + bindingresult tutkivat, rikkooko tallentumassa oleva postaus sääntöjä 
     @PostMapping("/savePost")
     @PreAuthorize("hasAuthority('USER')")
-    public String savePost(@Valid @ModelAttribute("post") Post post, BindingResult br) {
+    public String savePost(@Valid @ModelAttribute("post") Post post, BindingResult br, Authentication authentication) {
         if (br.hasErrors()) {
             return "addPost";
         }
+        //haetaan sisäänkirjautuneen käyttäjän tiedot authentication avulla
+        //asetetaan tiedot kirjoittajalle
+        //jos kirjoittajaa ei löydy -> virheilmoitus
+        String username = authentication.getName();
+        AppUser writer = uRepo.findByUserName(username).orElseThrow(() ->
+        new IllegalStateException("User not found: " + username));
+        post.setWriter(writer);
 
         //postauksen tekstin muotoilu
         String inputText = post.getText().trim()
@@ -130,8 +139,10 @@ public class PostController {
             //luodaan uusi postkeyword-olio ja tallennetaan se repoon
             PostKeyword pk = new PostKeyword(post, doesExist);
             pAndKRepo.save(pk);
+            
         }
-        return "redirect:postlist";     
+        //pRepo.save(post);
+        return "redirect:/postlist_username/" + writer.getUserName();     
     }
 
     //postauksen editoiminen, tämä ei vielä tallenna postausta vaan avaa lomakkeen 

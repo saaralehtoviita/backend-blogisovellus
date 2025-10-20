@@ -20,7 +20,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             redirectURL = "/postlistEdit";
         } else if (authentication.getAuthorities().stream().anyMatch(a -> 
         a.getAuthority().equals("USER"))) {
-            redirectURL = "/postlist_username/{userName}";
+            String userName = authentication.getName();
+            redirectURL = "/postlist_username/" + userName;
         }
 
         response.sendRedirect(redirectURL);

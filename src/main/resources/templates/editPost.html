@@ -33,10 +33,12 @@
                 <!-- tämä tapa ei transient annotaation kanssa toimi:
             <div th:if="${#fields.hasErrors('keywordInput')}" th:errors="*{keywordInput}" class="text-danger">Error</div> -->
         </div>
-    <input type="submit" value="Save Post" class="btn btn-success mt-2">
-
-
+    <input type="submit" value="Save Post" class="btn mt-2">
         <!--Lomakkeeseen ei tarvitse täydentää postauksen kirjoittajan tietoja, ne täydentyvät automaattisesti sisäänkirjautuneen käyttäjän tiedoista-->
+    </form>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-signout mt-2">
+          <i class="bi bi-box-arrow-right"></i> Sign out</button>  
     </form>
 </body>
 </html>
