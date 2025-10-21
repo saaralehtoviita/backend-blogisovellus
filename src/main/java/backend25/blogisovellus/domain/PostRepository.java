@@ -8,4 +8,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findPostByWriterUserName(String userName);
     List<Post> findPostByPostKeywords_Keyword_StrKeyword(String strKeyword);
+    Post findPostByTitle(String titlePost);
 }
