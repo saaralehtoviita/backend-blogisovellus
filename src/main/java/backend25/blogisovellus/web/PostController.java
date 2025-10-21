@@ -194,10 +194,19 @@ public class PostController {
     //oikea post-olio haetaan id:n perusteella
     @RequestMapping("/editPost/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')") //anyauthority mahdollistaa useamman roolin
-    public String editPost(@PathVariable Long id, Model model) {
+    public String editPost(@PathVariable Long id, Model model, Authentication authentication) {
+        //tarkistetaan id:n perusteella löytyyko postaus reposta
         Post post = pRepo.findById(id).orElse(null);
         if (post == null) {
             return "redirect:/postlistEdit";
+        }
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+        String currUser = authentication.getName();
+
+        if (!isAdmin && !post.getWriter().getUserName().equals(currUser)) {
+            return "redirect:/postlist";
         }
 
         //haetaan postauksen keywordit ja tehdään niistä merkkijono, pilkku erottimena
@@ -265,11 +274,12 @@ public class PostController {
             pAndKRepo.save(pk);
         }
         }
+        //ohjataan tallennuksen jälkeen adminit omalle sivulle ja käyttäjät omalle
         if (authentication.getAuthorities().stream().anyMatch(a ->
         a.getAuthority().equals("ADMIN"))) { 
         return "redirect:/postlistEdit";
         } else {
-            return "redirect:postlist_username/" + authentication.getName();
+            return "redirect:/postlist_username/" + authentication.getName();
         }
 
     }

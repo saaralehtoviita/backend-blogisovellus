@@ -2,8 +2,12 @@ package backend25.blogisovellus.web;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend25.blogisovellus.domain.AppUserRepository;
@@ -55,4 +59,23 @@ public class PostRestController {
         public List<Post> getPostsByWriter(@PathVariable("writer") String writer) {
             return pRepo.findPostByWriterUserName(writer);
         }
+
+    @PostMapping("posts")
+        public Post newPost(@RequestBody Post newPost) {
+            return pRepo.save(newPost);
+        }
+
+    @PutMapping("posts/{id}") 
+        public Post editPost(@RequestBody Post editedPost, @PathVariable Long id) {
+            editedPost.setPostId(id);
+            return pRepo.save(editedPost);
+        }
+    @DeleteMapping("posts/{id}")
+        public List<Post> deletePost(@PathVariable Long id) {
+            pRepo.deleteById(id);
+            return pRepo.findAll();
+        }
+        
+        
+
 }
