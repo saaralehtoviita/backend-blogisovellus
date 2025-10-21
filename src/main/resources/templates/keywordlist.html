@@ -10,13 +10,9 @@
     <link rel="stylesheet" href="/css/omatyyli.css">
 </head>
 <!--Tämä sivu on julkinen ja näkyy kaikille blogia lukeville.
-Tälle sivulle tulee listaus postausten otsikoista, otsikot muutetaan linkeiksi/painikkeiksi, 
-josta pääsee lukemaan koko postauksen
-taulukon otsikot tulevat olemaan: Otsikko, Päivämäärä, Avainsanat/aiheet
-Tälle sivulle tulee myös hakutoiminto, haun perusteella voi hakea postauksia avainsanojen, otsikon, tai päivämäärän perusteella-->
+Tällä sivulla listaus kaikista olemassa olevista avainsanoista-->
 <body class="ml-4 mt-4">
-    <h1 class="mt-4">All blogposts</h1>
-    <h3>By clicking the title, you can read the whole post!</h3>
+    <h1 class="mt-4">All existing keywords</h1>
     <table class="table table-striped">
         <!--Otsikkorivi-->
         <tr>
@@ -39,8 +35,8 @@ Tälle sivulle tulee myös hakutoiminto, haun perusteella voi hakea postauksia a
         </tr>
     </table>
     <p>Search for posts by keyword:</p>
-    <form th:action="@{/postlistKw}" method="get">
-        <input type="text" th:name="input"/>
+    <form th:action="@{/postlistKw}">
+        <input type="text" th:field="*{keywordInput}">
         <input type="submit" value="Search" class="btn btn-edit">
     </form>
 </body>

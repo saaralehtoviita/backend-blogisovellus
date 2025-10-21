@@ -1,5 +1,6 @@
 package backend25.blogisovellus.web;
 
+import java.util.ArrayList;
 import java.util.List;
 //import java.util.HashSet;
 //import java.util.Set;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import backend25.blogisovellus.domain.AppUser;
@@ -72,6 +74,25 @@ public class PostController {
         model.addAttribute("post", postaus);
         return "post";
     }
+
+    @GetMapping("/keywordlist")
+    public String keywordList(Model model) {
+        List<Keyword> keywordObjects = kRepo.findAll();
+        List<String> keywords = new ArrayList<>();
+        for (Keyword k : keywordObjects) {
+            keywords.add(k.getStrKeyword());
+        }
+        model.addAttribute("keywords", keywords);
+        return "keywordlist";
+    }
+
+    @GetMapping("/postlistKw")
+        public String showPostsByKeyword(@RequestParam("input") String input, Model model) {
+            List<Post> postsByKeyword = pRepo.findPostByPostKeywords_Keyword_StrKeyword(input);
+            model.addAttribute("postsByKeyword", postsByKeyword);
+            model.addAttribute("kwByUser", input);
+            return "postlistKw";
+        }
 
     //SISÄÄNKIRJAUTUNEILLE KÄYTTÄJILLE
 
@@ -192,7 +213,7 @@ public class PostController {
         //haetaan postauksen teksti ja muotoillaan se
         String formattedText = editedPost.getText().trim()
             .replaceAll("\\*\\*(.*?)\\*\\*", "<strong>$1</strong>")
-            .replaceAll("\\_\\_(._?)\\_\\_", "<i>$1</i>")
+            .replaceAll("\\_\\_(.*?)\\_\\_", "<i>$1</i>")
             .replaceAll("\n", "<br>");
         
         //asetetaan muotoilti teksti postauksen sisällöksi

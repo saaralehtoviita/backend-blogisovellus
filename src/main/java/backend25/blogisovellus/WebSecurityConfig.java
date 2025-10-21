@@ -31,10 +31,12 @@ public class WebSecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
             authorize -> authorize
-            .requestMatchers(HttpMethod.GET, "/postlist").permitAll()
+            .requestMatchers(HttpMethod.GET, "/postlist/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll()
+            .requestMatchers(HttpMethod.GET, "/postlistKw/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/addPost").hasAuthority("USER")
             .requestMatchers(HttpMethod.GET, "/postlist_username").hasAuthority("USER")
+            .requestMatchers(HttpMethod.POST, "/postlist_username").hasAnyAuthority("USER", "ADMIN")
             .requestMatchers(HttpMethod.POST, "/postlistEdit").hasAuthority("ADMIN")
             .requestMatchers("/h2-console/").permitAll()
             .anyRequest().authenticated()) //tekee postmaniin login-toiminnon
@@ -45,7 +47,8 @@ public class WebSecurityConfig {
                 //.defaultSuccessUrl("/postlistEdit", true) //mihin tullaan onnistuneen kirjautumisen jälkeen
                 .successHandler(customSuccessHandler())
                 .permitAll())
-            .logout(logout -> logout.permitAll())
+            //.logout(logout -> logout.permitAll())
+            .logout(logout -> logout.logoutSuccessUrl("/postlist"))
             .csrf(csrf -> csrf.disable());
 
         return http.build();

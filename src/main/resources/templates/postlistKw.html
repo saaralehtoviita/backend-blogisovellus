@@ -9,13 +9,9 @@
     <script src="/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/omatyyli.css">
 </head>
-<!--Tämä sivu on julkinen ja näkyy kaikille blogia lukeville.
-Tälle sivulle tulee listaus postausten otsikoista, otsikot muutetaan linkeiksi/painikkeiksi, 
-josta pääsee lukemaan koko postauksen
-taulukon otsikot tulevat olemaan: Otsikko, Päivämäärä, Avainsanat/aiheet
-Tälle sivulle tulee myös hakutoiminto, haun perusteella voi hakea postauksia avainsanojen, otsikon, tai päivämäärän perusteella-->
+<!--Tämä sivu on julkinen ja näkyy kaikille blogia lukeville. Tänne listataan postaukset avainsanan perusteella-->
 <body class="ml-4 mt-4">
-    <h1 class="mt-4">All blogposts</h1>
+    <h1 class="mt-4">Blogposts by keyword <span th:text="${kwByUser}"></span></h1>
     <h3>By clicking the title, you can read the whole post!</h3>
     <table class="table table-striped">
         <!--Otsikkorivi-->
@@ -26,7 +22,7 @@ Tälle sivulle tulee myös hakutoiminto, haun perusteella voi hakea postauksia a
             <th>Keywords</th>      
         </tr>
         <!--Postausten tiedot-->
-                <tr th:each = "postaus : ${posts}">
+                <tr th:each = "postaus : ${postsByKeyword}">
                 <td><a th:text="${postaus.title}" th:href="@{/post/{id}(id=${postaus.postId})}"></a>
                 </td>
             <td th:text="${postaus.postDate}"></td>
@@ -38,10 +34,6 @@ Tälle sivulle tulee myös hakutoiminto, haun perusteella voi hakea postauksia a
             </td>
         </tr>
     </table>
-    <p>Search for posts by keyword:</p>
-    <form th:action="@{/postlistKw}" method="get">
-        <input type="text" th:name="input"/>
-        <input type="submit" value="Search" class="btn btn-edit">
-    </form>
+    <a href="/postlist" class="btn">Back to all posts</a>
 </body>
 </html>
