@@ -68,6 +68,7 @@ public class PostController {
     }
 
     //yksittäisen postauksen näyttäminen, sisältö vaihtuu postauksen id:n mukaan
+    //modelilla välitetään selaimelle preposta löytyvä postaus nimellä post 
     @GetMapping("/post/{id}")
     public String showPost(@PathVariable Long id, Model model) {
         Post postaus = pRepo.findById(id).orElse(null);
@@ -75,6 +76,8 @@ public class PostController {
         return "post";
     }
 
+    //kaikki avainsanat merkkijono-listana
+    //toistaiseksi metodia ei käytetä mihinkään
     @GetMapping("/keywordlist")
     public String keywordList(Model model) {
         List<Keyword> keywordObjects = kRepo.findAll();
@@ -86,12 +89,33 @@ public class PostController {
         return "keywordlist";
     }
 
+    //postaukset listattuna keywordin perusteella
+    //postlist templatessa käyttäjä syöttää lomakkeelle merkkijonon (th:name="input")
+    //käyttäjän painaessa search-painiketta, aktivoituu allaoleva metodi
+
     @GetMapping("/postlistKw")
         public String showPostsByKeyword(@RequestParam("input") String input, Model model) {
+            //luodaan ensin listat keywordolioisa ja sitten niiten keyword-merkkijoinoista
+            List<Keyword> keywordObjects = kRepo.findAll();
+            List<String> keywords = new ArrayList<>();
+            for (Keyword k : keywordObjects) {
+            keywords.add(k.getStrKeyword());
+        }   
+            String message = "Keyword not found";
+            //jos käyttäjän antama sana löytyy merkkijonolistalta
+            //input-merkkijonon perusteella haetaan postaus-reposta kaikki postaukset joista löytyy kyseinen avainsana
+            //modelin välityksellä postsByKeyword välitetään thymeleafille, josta postaukset listataan
+            //modelin välityksellä kwByUser välitetään thymeleafille 
+            if (keywords.contains(input)) {
             List<Post> postsByKeyword = pRepo.findPostByPostKeywords_Keyword_StrKeyword(input);
             model.addAttribute("postsByKeyword", postsByKeyword);
             model.addAttribute("kwByUser", input);
             return "postlistKw";
+            } else { //jos ei löydy, läheteään viesti sekä kaikki postaukset selaimelle ja ohjataan takaisin postlist näkymään
+                model.addAttribute("message", message);
+                model.addAttribute("posts", pRepo.findAll());
+                return "postlist";
+            }
         }
 
     //SISÄÄNKIRJAUTUNEILLE KÄYTTÄJILLE
