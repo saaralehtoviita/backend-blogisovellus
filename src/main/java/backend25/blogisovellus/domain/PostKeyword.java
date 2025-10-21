@@ -1,5 +1,7 @@
 package backend25.blogisovellus.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,10 +20,12 @@ public class PostKeyword {
 
     @ManyToOne
     @JoinColumn(name = "post_id")
+    @JsonIgnore
     private Post post;
 
     @ManyToOne
     @JoinColumn(name = "keyword_id")
+    @JsonIgnore
     private Keyword keyword;
 
     //tyhjä konstruktori

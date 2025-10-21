@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -43,6 +45,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name="appuser_id")
+    @JsonIgnore
     private AppUser writer;
 
 /*     @NotEmpty(message = "A post must have at least one keyword")
