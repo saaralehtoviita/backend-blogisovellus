@@ -31,6 +31,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
             authorize -> authorize
+            .requestMatchers("/css/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/posts**").permitAll() //sallitaan kaikille pääsy postausten json listaukseen
             .requestMatchers(HttpMethod.GET, "/postlist/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll()

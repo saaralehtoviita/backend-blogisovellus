@@ -158,9 +158,9 @@ public class PostController {
 
         //postauksen tekstin muotoilu
         String inputText = post.getText().trim()
-        .replaceAll("\\*\\*(.*?)\\*\\*", "<strong>$1</strong>")
-        .replaceAll("\\_\\_(._?)\\_\\_", "<i>$1</i>")
-        .replaceAll("\n", "<br>");
+            .replaceAll("\\*\\*(.*?)\\*\\*", "<strong>$1</strong>")
+            .replaceAll("\\_\\_(.*?)\\_\\_", "<i>$1</i>")
+            .replaceAll("\n", "<br>");
         post.setText(inputText);
 
         //tallennetaan ensin post-olio repoon ilman avainsanoja
