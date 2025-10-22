@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend25.blogisovellus.domain.AppUser;
 import backend25.blogisovellus.domain.AppUserRepository;
+import backend25.blogisovellus.domain.Keyword;
 import backend25.blogisovellus.domain.KeywordRepository;
 import backend25.blogisovellus.domain.Post;
 import backend25.blogisovellus.domain.PostKeyword;
@@ -35,41 +37,94 @@ public class PostRestController {
         this.uRepo = uRepo;
     }
 
+    //kaikki postaukset listattuna
     @GetMapping("/posts")
     public List<Post> getAllPosts() {
         return pRepo.findAll();
     }
 
+    //kaikki postkeywordit listattuna
     @GetMapping("/postkeywords") 
         public List<PostKeyword> getAllPostKeywords() {
             return pAndKRepo.findAll();
     }
 
+    //kaikki keywordit listattuna
+    @GetMapping("/keywords")
+        public List<Keyword> getAllKeywords() {
+            return kRepo.findAll();
+        }
+    
+    //kaikki käyttäjät listattuna - tämä metodi ei julkinen koska sisältää henkilötietoja
+    @GetMapping("/users")
+        public List<AppUser> getAllUsers() {
+            return uRepo.findAll();
+        }
+    
+    //käyttäjän hakeminen id:n perusteella   
+    @GetMapping("/users/id/{id}")
+        public AppUser getUserById(@PathVariable("id") Long userId) {
+            return uRepo.findById(userId).orElse(null);
+        }
+
+    //postauksen hakeminen id:n perusteella
     @GetMapping("posts/id/{id}")
         public Post getPostById(@PathVariable("id") Long postId) {
             return pRepo.findById(postId).orElse(null);
         }
-    
+
+    //postauksen hakeminen otsikon perusteella
     @GetMapping("posts/title/{title}")
         public Post getPostByTitle(@PathVariable("title") String title) {
             return pRepo.findPostByTitle(title);
         }
     
+    //postaukset listattuna kirjoittajan perusteella
     @GetMapping("posts/writer/{writer}")
         public List<Post> getPostsByWriter(@PathVariable("writer") String writer) {
             return pRepo.findPostByWriterUserName(writer);
         }
+    
+    //postaukset listattuna keywordin perusteella
+    @GetMapping("posts/keyword/{keyword}")
+        public List<Post> getPostsByKeyword(@PathVariable("keyword") String keyword) {
+            return pRepo.findPostByPostKeywords_Keyword_StrKeyword(keyword);
+        }
 
+    //uuden postauksen lisääminen
     @PostMapping("posts")
         public Post newPost(@RequestBody Post newPost) {
             return pRepo.save(newPost);
         }
+    
+    //uuden käyttäjän lisääminen
+    @PostMapping("users")
+        public AppUser newUser(@RequestBody AppUser newUser) {
+            return uRepo.save(newUser);
+        }
 
+    //postauksen editoiminen id:n perusteella
     @PutMapping("posts/{id}") 
-        public Post editPost(@RequestBody Post editedPost, @PathVariable Long id) {
-            editedPost.setPostId(id);
+        public Post editPost(@RequestBody Post editedPost, @PathVariable Long postId) {
+            editedPost.setPostId(postId);
             return pRepo.save(editedPost);
         }
+
+    //käyttäjän editoiminen id:n perusteella
+    @PutMapping("users/{id}")
+        public AppUser editUser(@RequestBody AppUser editedUser, @PathVariable Long userId)  {
+            editedUser.setUserId(userId);
+            return uRepo.save(editedUser);
+        }
+    
+    //käyttäjän poistaminen id:n perusteella
+    @DeleteMapping("users/{id}")
+        public List<AppUser> deleteUser(@PathVariable Long userId) {
+            uRepo.deleteById(userId);
+            return uRepo.findAll();
+        }
+    
+    //postauksen poistaminen id:n perusteella
     @DeleteMapping("posts/{id}")
         public List<Post> deletePost(@PathVariable Long id) {
             pRepo.deleteById(id);

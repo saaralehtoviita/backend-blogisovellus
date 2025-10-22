@@ -201,12 +201,16 @@ public class PostController {
             return "redirect:/postlistEdit";
         }
 
+        //tarkastetaan, onko kirjautuneella käyttäjällä admin rooli
         boolean isAdmin = authentication.getAuthorities().stream()
             .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+        //tehdään merkkijono autentikoidun/(sisäänkirjautuneen) käyttjän tunnuksesta
         String currUser = authentication.getName();
 
+        //jos käyttäjä ei ole admin eikä kirjoittajan tiedot vastaa kirjautunutta käyttäjää ->
+        //ohjataan takaisin käyttäjän omalle sivulle
         if (!isAdmin && !post.getWriter().getUserName().equals(currUser)) {
-            return "redirect:/postlist";
+            return "redirect:/postlist_username/" + authentication.getName();
         }
 
         //haetaan postauksen keywordit ja tehdään niistä merkkijono, pilkku erottimena

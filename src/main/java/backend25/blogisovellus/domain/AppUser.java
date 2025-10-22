@@ -61,6 +61,10 @@ public class AppUser {
         return userId;
     }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+    
     public String getFirstName() {
         return firstName;
     }
@@ -112,6 +116,8 @@ public class AppUser {
     public void setUserPosts(List<Post> userPosts) {
         this.userPosts = userPosts;
     }
+
+
 
     
 
