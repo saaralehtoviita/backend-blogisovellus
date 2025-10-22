@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+//tällä sivulla määritellään, mikä sivu käyttäjälle avautuu sisäänkirjautumisen jälkeen 
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
@@ -17,11 +18,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         if(authentication.getAuthorities().stream().anyMatch(a ->
         a.getAuthority().equals("ADMIN"))) {
-            redirectURL = "/postlistEdit";
+            redirectURL = "/postlistEdit"; //admin ohjautuu aina tänne 
         } else if (authentication.getAuthorities().stream().anyMatch(a -> 
         a.getAuthority().equals("USER"))) {
             String userName = authentication.getName();
-            redirectURL = "/postlist_username/" + userName;
+            redirectURL = "/postlist_username/" + userName; //käyttäjille avautuu sivu, jossa vain omat postaukset listattuna usernamen mukaan
         }
 
         response.sendRedirect(redirectURL);

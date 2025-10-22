@@ -35,12 +35,16 @@ public class BlogisovellusApplication {
 	Keyword crossfit = new Keyword("crossfit");
 	Keyword ankle = new Keyword("ankle");
 	Keyword injury = new Keyword("injury");
+	Keyword rehabilitation = new Keyword("rehabilitation");
+	Keyword injuryPrevention = new Keyword("injury prevention");
 
 	kRepo.save(crossfit);
 	kRepo.save(injury);
 	kRepo.save(ankle);
 	kRepo.save(shoulder);
 	kRepo.save(knee);
+	kRepo.save(rehabilitation);
+	kRepo.save(injuryPrevention);
 
 	//luodaan käyttäjiä
 
@@ -55,26 +59,33 @@ public class BlogisovellusApplication {
 
 	//luodaan postauksia ensin ilman keywordseja ja tallennetaan ne repoon
 	//yhdistetään postaukset ja avainsanat - vastaa tiedon tallentamista postkeyword välitauluun
-	Post post1 = new Post("Urheiluvammat Crossfitissa", "Blogipostaustekstiä 1.", "23.9.2025", u2);
-	pRepo.save(post1);
-	
+	Post post1 = new Post("Injuries in Crosssfit", "Blog text 1.", "23.9.2025", u2);
+	pRepo.save(post1);	
 	pkRepo.save(new PostKeyword(post1, crossfit));
 	pkRepo.save(new PostKeyword(post1, injury));
 
-
-	Post post2 = new Post("Olkapään kuntoutus", "Blogipostaustekstiä 2.", "24.9.2025", u1);
+	Post post2 = new Post("Shoulder rehabilitation", "Blog text 2.", "24.9.2025", u1);
 	pRepo.save(post2);
-
 	pkRepo.save(new PostKeyword(post2, crossfit));
 	pkRepo.save(new PostKeyword(post2, shoulder));
+	pkRepo.save(new PostKeyword(post2, rehabilitation));
 
-
-	Post post3 = new Post("Nilkan kuntoutus", "Blogipostaustekstiä 3.", "25.9.2025", u2);
-	pRepo.save(post3);
-	
+	Post post3 = new Post("Ankle rehabilitation", "Blog text 3.", "25.9.2025", u2);
+	pRepo.save(post3);	
 	pkRepo.save(new PostKeyword(post3, crossfit));
 	pkRepo.save(new PostKeyword(post3, ankle));
+	pkRepo.save(new PostKeyword(post3, rehabilitation));
 
+	Post post4 = new Post("Polvivammat", "Blog text 4.", "26.9.2025", u1);
+	pRepo.save(post4);
+	pkRepo.save(new PostKeyword(post4, injury));
+	pkRepo.save(new PostKeyword(post4, knee));
+
+	Post post5 = new Post("How to prevent injuries in Crossfit?", "Blog text 5.", "25.9.2025", u2);
+	pRepo.save(post5);
+	pkRepo.save(new PostKeyword(post5, crossfit));
+	pkRepo.save(new PostKeyword(post5, injury));
+	pkRepo.save(new PostKeyword(post5, injuryPrevention));
 	};
 	}
 

@@ -2,6 +2,7 @@ package backend25.blogisovellus.web;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,12 @@ public class PostRestController {
         this.pAndKRepo = pAndKRepo;
         this.uRepo = uRepo;
     }
+
+    //POST-testaamista varten testimetodi:
+    @PostMapping("/test")
+        public ResponseEntity<String> testPost() {
+            return ResponseEntity.ok("POST works");
+        }
 
     //kaikki postaukset listattuna
     @GetMapping("/posts")
@@ -92,45 +99,42 @@ public class PostRestController {
         }
 
     //uuden postauksen lisääminen
-    @PostMapping("posts")
+    @PostMapping("/posts")
         public Post newPost(@RequestBody Post newPost) {
             return pRepo.save(newPost);
         }
     
     //uuden käyttäjän lisääminen
-    @PostMapping("users")
+    @PostMapping("/users")
         public AppUser newUser(@RequestBody AppUser newUser) {
             return uRepo.save(newUser);
         }
 
     //postauksen editoiminen id:n perusteella
-    @PutMapping("posts/{id}") 
-        public Post editPost(@RequestBody Post editedPost, @PathVariable Long postId) {
+    @PutMapping("posts/id/{id}") 
+        public Post editPost(@RequestBody Post editedPost, @PathVariable("id") Long postId) {
             editedPost.setPostId(postId);
             return pRepo.save(editedPost);
         }
 
     //käyttäjän editoiminen id:n perusteella
-    @PutMapping("users/{id}")
-        public AppUser editUser(@RequestBody AppUser editedUser, @PathVariable Long userId)  {
+    @PutMapping("users/id/{id}")
+        public AppUser editUser(@RequestBody AppUser editedUser, @PathVariable("id") Long userId)  {
             editedUser.setUserId(userId);
             return uRepo.save(editedUser);
         }
     
     //käyttäjän poistaminen id:n perusteella
-    @DeleteMapping("users/{id}")
-        public List<AppUser> deleteUser(@PathVariable Long userId) {
+    @DeleteMapping("users/id/{id}")
+        public List<AppUser> deleteUser(@PathVariable("id") Long userId) {
             uRepo.deleteById(userId);
             return uRepo.findAll();
         }
     
     //postauksen poistaminen id:n perusteella
-    @DeleteMapping("posts/{id}")
-        public List<Post> deletePost(@PathVariable Long id) {
+    @DeleteMapping("posts/id/{id}")
+        public List<Post> deletePost(@PathVariable("id") Long id) {
             pRepo.deleteById(id);
             return pRepo.findAll();
         }
-        
-        
-
 }
