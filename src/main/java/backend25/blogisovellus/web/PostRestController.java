@@ -1,6 +1,8 @@
 package backend25.blogisovellus.web;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend25.blogisovellus.domain.AppUser;
+import backend25.blogisovellus.domain.AppUserDTO;
 import backend25.blogisovellus.domain.AppUserRepository;
 import backend25.blogisovellus.domain.Keyword;
 import backend25.blogisovellus.domain.KeywordRepository;
 import backend25.blogisovellus.domain.Post;
+import backend25.blogisovellus.domain.PostDTO;
 import backend25.blogisovellus.domain.PostKeyword;
 import backend25.blogisovellus.domain.PostKeywordRepository;
 import backend25.blogisovellus.domain.PostRepository;
@@ -46,8 +50,17 @@ public class PostRestController {
 
     //kaikki postaukset listattuna
     @GetMapping("/posts")
-    public List<Post> getAllPosts() {
-        return pRepo.findAll();
+    public List<PostDTO> getAllPosts() {
+        return pRepo.findAll().stream().map(post -> {
+            PostDTO dto = new PostDTO();
+            dto.setTitle(post.getTitle());
+            dto.setText(post.getText());
+            dto.setPostDate(post.getPostDate());
+            dto.setWriterUsername(post.getWriter().getUserName());
+            dto.setKeywords(post.getKeywordsAsStringList());
+            return dto;
+        })
+        .collect(Collectors.toList());
     }
 
     //kaikki postkeywordit listattuna
@@ -99,9 +112,20 @@ public class PostRestController {
         }
 
     //uuden postauksen lisääminen
+    //käytetään apuna PostDTO:ta tietojen välittämiseen oikealle post-oliolle
     @PostMapping("/posts")
-        public Post newPost(@RequestBody Post newPost) {
-            return pRepo.save(newPost);
+        public Post newPost(@RequestBody PostDTO postDTO) {
+            Post post = new Post();
+            //kopioidaan DTO:n tiedot Post-objektille 
+            post.setTitle(postDTO.getTitle());
+            post.setText(postDTO.getText());
+            post.setPostDate(LocalDate.now().toString());
+
+            AppUser writer = uRepo.findByUserName(postDTO.getWriterUsername())
+                            .orElseThrow(() -> new RuntimeException("Writer not found"));
+            post.setWriter(writer);
+            
+            return pRepo.save(post);
         }
     
     //uuden käyttäjän lisääminen

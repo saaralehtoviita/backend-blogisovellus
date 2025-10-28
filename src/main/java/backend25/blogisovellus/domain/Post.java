@@ -1,8 +1,11 @@
 package backend25.blogisovellus.domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -145,5 +148,21 @@ public class Post {
 
     public void setWriter(AppUser writer) {
         this.writer = writer;
+    }
+
+    public List<String> getKeywordsAsStringList() {
+        List<String> keywordsList = new ArrayList<>();
+            for (PostKeyword pk : postKeywords) {
+                keywordsList.add(pk.getKeyword().getStrKeyword());
+            }
+        return keywordsList;
+    }
+
+    public String getKeywordsAsString() {
+        List<String> keywords = new ArrayList<>();
+            for (PostKeyword pk : postKeywords) {
+                keywords.add(pk.getKeyword().getStrKeyword());
+            }
+        return String.join(", ", keywords);
     }
 }
