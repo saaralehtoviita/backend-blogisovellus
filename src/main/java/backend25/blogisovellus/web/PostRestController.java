@@ -1,7 +1,9 @@
 package backend25.blogisovellus.web;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
@@ -113,6 +115,7 @@ public class PostRestController {
 
     //uuden postauksen lisääminen
     //käytetään apuna PostDTO:ta tietojen välittämiseen oikealle post-oliolle
+    //metodi ottaa vastaan postDTO tyyppisen parametrin 
     @PostMapping("/posts")
         public Post newPost(@RequestBody PostDTO postDTO) {
             Post post = new Post();
@@ -121,9 +124,26 @@ public class PostRestController {
             post.setText(postDTO.getText());
             post.setPostDate(LocalDate.now().toString());
 
+            //katsotaan, löytyykö kannasta usernamella kirjoittajaa 
             AppUser writer = uRepo.findByUserName(postDTO.getWriterUsername())
-                            .orElseThrow(() -> new RuntimeException("Writer not found"));
-            post.setWriter(writer);
+                            .orElseThrow(() -> new RuntimeException("Writer not found")); //kirjoittajan pitää löytyä kannasta
+            post.setWriter(writer); //asetetaan kirjoittajan tiedot post-objektille 
+
+            Set<PostKeyword> postKeywords = postDTO.getKeywords().stream() 
+                .map(str -> {
+                    Keyword keyword = kRepo.findByStrKeyword(str) 
+                        .orElseGet(() -> {
+                            Keyword k = new Keyword();
+                            k.setStrKeyword(str);
+                            return kRepo.save(k);
+                        });
+                    PostKeyword pk = new PostKeyword();
+                    pk.setPost(post);
+                    pk.setKeyword(keyword);
+                    return pk;
+                })
+                .collect(Collectors.toSet()); //luodaan PostKeyword-setti dto-luokan keywords-listasta
+            post.setPostKeywords(postKeywords);
             
             return pRepo.save(post);
         }
