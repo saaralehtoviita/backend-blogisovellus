@@ -78,6 +78,7 @@ public class PostController {
 
     //kaikki avainsanat merkkijono-listana
     //toistaiseksi metodia ei käytetä mihinkään
+    //tätä voisi myöhemmin hyödyntää, kun haetaan postauksia avainsanan perusteella - käyttäjä siis näkisi, mitä avainsanoja on olemassa
     @GetMapping("/keywordlist")
     public String keywordList(Model model) {
         List<Keyword> keywordObjects = kRepo.findAll();
@@ -204,19 +205,19 @@ public class PostController {
         //tarkastetaan, onko kirjautuneella käyttäjällä admin rooli
         boolean isAdmin = authentication.getAuthorities().stream()
             .anyMatch(a -> a.getAuthority().equals("ADMIN"));
-        //tehdään merkkijono autentikoidun/(sisäänkirjautuneen) käyttjän tunnuksesta
+        //tehdään merkkijono autentikoidun/(sisäänkirjautuneen) käyttäjän tunnuksesta
         String currUser = authentication.getName();
 
         //jos käyttäjä ei ole admin eikä kirjoittajan tiedot vastaa kirjautunutta käyttäjää ->
         //ohjataan takaisin käyttäjän omalle sivulle
+        //tähän tilanteeseen päädytään vain, jos käyttäjä kirjoittaa suoraan urliin osoitteen 
+        //tähän kohtaan voisi lisätä virheidenkäsittelyä
         if (!isAdmin && !post.getWriter().getUserName().equals(currUser)) {
             return "redirect:/postlist_username/" + authentication.getName();
         }
 
         //haetaan postauksen keywordit ja tehdään niistä merkkijono, pilkku erottimena
-        String keywords = post.getPostKeywords().stream()
-            .map(pk -> pk.getKeyword().getStrKeyword())
-            .collect(Collectors.joining(", "));
+        String keywords = post.getKeywordsAsString();
     
         //asetetaan keywords-merkkijono inputin paikalle
         post.setKeywordInput(keywords);
@@ -233,7 +234,7 @@ public class PostController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @Transactional //varmistaa, että tiedot tallentuvat samalla kertaa tietokantaan
     public String saveEditedPost(@Valid @ModelAttribute("post") Post editedPost, BindingResult br, Model model, Authentication authentication) {
-        logger.info("Edited post id ={}", editedPost.getPostId());
+        //logger.info("Edited post id ={}", editedPost.getPostId());
         if (br.hasErrors()) {
             //model.addAttribute("keywords", kRepo.findAll());
             return "editPost";
@@ -255,9 +256,6 @@ public class PostController {
         
         //asetetaan muotoilti teksti postauksen sisällöksi
         existingPost.setText(formattedText);
-
-        //asetetaan postauksen kirjoittaja 
-        //existingPost.setWriter(editedPost.getWriter());
 
         //tallennetaan postaus repoon
         existingPost = pRepo.save(existingPost);
@@ -298,11 +296,13 @@ public class PostController {
     @PostMapping("/deletePost/{id}")
     @PreAuthorize("hasAuthority('ADMIN')") //postgren kanssa hasRole
     public String deletePost(@PathVariable Long id) {
-        pRepo.deleteById(id);
+        Post post = pRepo.findById(id).orElseThrow(() -> new RuntimeException("Post not found by given id"));
+        pRepo.delete(post);
         return "redirect:/postlistEdit";
     }
 
     @GetMapping("/postlistEdit")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String postListEdit(Model model) {
         model.addAttribute("posts", pRepo.findAll());
         return "postlistEdit";
