@@ -35,8 +35,13 @@ public class WebSecurityConfig {
             .requestMatchers(HttpMethod.GET, "/posts/**").permitAll() //sallitaan kaikille pääsy postausten json listaukseen
             .requestMatchers(HttpMethod.GET, "/postkeywords**").permitAll() //sallitaan kaikille pääsy postkeywordsien json listaukseen
             .requestMatchers(HttpMethod.GET, "/keywords**").permitAll() //sallitaan kaikille pääsy keywordsien json listaukseen
+            .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/users/**").permitAll()
+            .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/posts**").permitAll()
             .requestMatchers(HttpMethod.PUT, "/posts/**").permitAll()
+            .requestMatchers(HttpMethod.DELETE, "/posts/**").permitAll()
+            .requestMatchers(HttpMethod.DELETE, "/keywords/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/postlist/**").permitAll() //kaikille näkyvä sivu
             .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll() //kaikille näkyvä sivu
             .requestMatchers(HttpMethod.GET, "/postlistKw/**").permitAll() //kaikille näkyvä sivu

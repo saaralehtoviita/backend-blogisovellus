@@ -5,6 +5,7 @@ public class AppUserDTO {
     private String firstName;
     private String lastName;
     private String userName;
+    private String role;
     //private List<String> postTitles;
 
     public String getFirstName() {
@@ -25,6 +26,13 @@ public class AppUserDTO {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
+    }
+    
 
     
     /*public List<String> getPostTitles() {

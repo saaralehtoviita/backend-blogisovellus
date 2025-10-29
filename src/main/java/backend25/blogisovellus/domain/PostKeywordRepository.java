@@ -11,4 +11,8 @@ public interface PostKeywordRepository extends JpaRepository<PostKeyword, Long> 
     //postkeyword-olioiden hakeminen postauksen perusteella
     List<PostKeyword> findAllByPost(Post post);
 
+    //tarkistus, löytyykö postkeyword-olioita keywordId:n perusteella
+
+    boolean existsByKeyword_KeywordId(Long keywordId);
+
 }
