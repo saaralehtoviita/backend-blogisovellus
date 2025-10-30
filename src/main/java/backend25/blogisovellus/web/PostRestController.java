@@ -56,7 +56,7 @@ public class PostRestController {
         }
 
     //kaikki postaukset listattuna
-    @GetMapping("/posts")
+    @GetMapping("/api/posts")
     public List<PostDTO> getAllPosts() {
         return pRepo.findAll().stream().map(post -> {
             PostDTO dto = new PostDTO();
@@ -72,20 +72,20 @@ public class PostRestController {
 
     //kaikki postkeywordit listattuna
     //turha metodi?
-    @GetMapping("/postkeywords") 
+    @GetMapping("/api/postkeywords") 
         public List<PostKeyword> getAllPostKeywords() {
             return pAndKRepo.findAll();
     }
 
     //kaikki keywordit listattuna
-    @GetMapping("/keywords")
+    @GetMapping("/api/keywords")
         public List<Keyword> getAllKeywords() {
             return kRepo.findAll();
         }
     
     //kaikki käyttäjät listattuna
     //käytetään DTO-luokkaa jossa ei ole salasanatietoja
-    @GetMapping("/users")
+    @GetMapping("/api/users")
         public List<AppUserDTO> getAllUsers() {
             return uRepo.findAll().stream().map(appuser -> {
                 AppUserDTO dto = new AppUserDTO();
@@ -99,7 +99,7 @@ public class PostRestController {
         }
     
     //käyttäjän hakeminen id:n perusteella   
-    @GetMapping("/users/id/{id}")
+    @GetMapping("/api/users/id/{id}")
         public AppUserDTO getUserById(@PathVariable("id") Long userId) {
             AppUser appuser = uRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found by given id."));
             AppUserDTO dto = new AppUserDTO();
@@ -111,7 +111,7 @@ public class PostRestController {
         }
 
     //postauksen hakeminen id:n perusteella
-    @GetMapping("posts/id/{id}")
+    @GetMapping("/api/posts/id/{id}")
         public PostDTO getPostById(@PathVariable("id") Long postId) {
             Post post = pRepo.findById(postId).orElseThrow(() -> new RuntimeException("No post was found by given id"));
             PostDTO dto = new PostDTO();
@@ -124,7 +124,7 @@ public class PostRestController {
         }
 
     //postauksen hakeminen otsikon perusteella
-    @GetMapping("posts/title/{title}")
+    @GetMapping("/api/posts/title/{title}")
         public PostDTO getPostByTitle(@PathVariable("title") String title) {
             Post post = pRepo.findPostByTitle(title).orElseThrow(() -> new RuntimeException("No post was found by given title"));
             PostDTO dto = new PostDTO();
@@ -140,7 +140,7 @@ public class PostRestController {
     //käytetään ennaltamäärittelemätöntö ResponseEntityä koska etukäteen ei tiedetä, löytyykö kirjoittajan nimellä postauksia
     //jos postauksia ei löydy, palautetaan body(merkkijono)
     //jos postauksia löytyy, palautetaan lista
-    @GetMapping("posts/writer/{writer}")
+    @GetMapping("/api/posts/writer/{writer}")
         public ResponseEntity<?> getPostsByWriter(@PathVariable("writer") String writer) {     
             List<PostDTO> dtos = pRepo.findPostByWriterUserName(writer).stream().map(post -> {
                 PostDTO dto = new PostDTO();
@@ -162,7 +162,7 @@ public class PostRestController {
     
     //postaukset listattuna keywordin perusteella
     //sama periaate, kun edellinen metodi
-    @GetMapping("posts/keyword/{keyword}")
+    @GetMapping("/api/posts/keyword/{keyword}")
         public ResponseEntity<?> getPostsByKeyword(@PathVariable("keyword") String keyword) {
             List<PostDTO> dtos = pRepo.findPostByPostKeywords_Keyword_StrKeyword(keyword).stream().map(post -> {
                 PostDTO dto = new PostDTO();
@@ -185,7 +185,7 @@ public class PostRestController {
     //uuden postauksen lisääminen
     //käytetään apuna PostDTO:ta tietojen välittämiseen oikealle post-oliolle
     //metodi ottaa vastaan postDTO tyyppisen parametrin 
-    @PostMapping("/posts")
+    @PostMapping("/api/posts")
         public Post newPost(@RequestBody PostDTO postDTO) {
             Post post = new Post();
             //kopioidaan DTO:n tiedot Post-objektille 
@@ -220,7 +220,7 @@ public class PostRestController {
     //uuden käyttäjän lisääminen
     //käytetään DTO-luokkaa
     //käyttäjät tallentuvat siis suppeilla tiedoilla ilman mm. salasanaa
-    @PostMapping("/users")
+    @PostMapping("/api/users")
         public AppUser newUser(@RequestBody AppUserDTO newUser) {
             AppUser appuser = new AppUser();
             appuser.setFirstName(newUser.getFirstName());
@@ -232,7 +232,7 @@ public class PostRestController {
 
     //postauksen editoiminen id:n perusteella
     //metodista puuttuu keywordsien editoiminen
-    @PutMapping("posts/id/{id}") 
+    @PutMapping("/api/posts/id/{id}") 
         public Post editPost(@RequestBody PostDTO editedPost, @PathVariable("id") Long postId) {
             Post post = pRepo.findById(postId)
             .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -246,38 +246,55 @@ public class PostRestController {
         }
 
     //käyttäjän editoiminen usernamen perusteella
-    @PutMapping("/users/username/{userName}")
-        public AppUser editUser(@RequestBody AppUserDTO editedUser, @PathVariable("userName") String userName)  {
+    @PutMapping("/api/users/username/{userName}")
+        public AppUserDTO editUser(@RequestBody AppUserDTO editedUser, @PathVariable("userName") String userName)  {
             AppUser appuser = uRepo.findByUserName(userName)
                 .orElseThrow(() -> new RuntimeException("User not found"));
             
             appuser.setFirstName(editedUser.getFirstName());
             appuser.setLastName(editedUser.getLastName());
             appuser.setRole(editedUser.getRole());
-            return uRepo.save(appuser);
+            uRepo.save(appuser);
+            return editedUser;
         }
     
     //käyttäjän poistaminen id:n perusteella
-    @DeleteMapping("users/id/{id}")
+/*     @DeleteMapping("/api/users/id/{id}")
         public List<AppUser> deleteUser(@PathVariable("id") Long userId) {
             AppUser user = uRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found by given id"));
             uRepo.delete(user);
             return uRepo.findAll();
+        } */
+    
+    @DeleteMapping("/api/users/id/{id}")
+        public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId) {
+            AppUser user = uRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found by given id"));
+            uRepo.delete(user);
+            return ResponseEntity.ok("User with id: " + userId + " was deleted succesfully.");
         }
+
+    
     
     //postauksen poistaminen id:n perusteella
-    @DeleteMapping("posts/id/{id}")
+/*     @DeleteMapping("/api/posts/id/{id}")
         public List<Post> deletePost(@PathVariable("id") Long id) {
             Post post = pRepo.findById(id).orElseThrow(() -> new RuntimeException("Post not found by given id"));
             pRepo.delete(post);
             return pRepo.findAll();
+        } */
+    
+    @DeleteMapping("/api/posts/id/{id}")
+        public ResponseEntity<String> deletePost(@PathVariable("id") Long id) {
+            Post post = pRepo.findById(id).orElseThrow(() -> new RuntimeException("Post not found by given id"));
+            pRepo.delete(post);
+            return ResponseEntity.ok("Post with id: " + id + " was deleted succesfully.");
         }
 
     //keywordin poistaimien id:n perusteelle
     //keywordia ei voi poistaa jos se esiintyy postkeywords-oliossa
     //responseentity sisältää HTTP status koodin, otsikot ja bodyn
     //metodissa palautetaan status ja merkkijono
-    @DeleteMapping("keywords/id/{id}")
+    @DeleteMapping("/api/keywords/id/{id}")
         public ResponseEntity<String> deleteKeyword(@PathVariable("id") Long id) {
             if (kRepo.existsById(id)) {
             boolean keywordInUse = pAndKRepo.existsByKeyword_KeywordId(id);

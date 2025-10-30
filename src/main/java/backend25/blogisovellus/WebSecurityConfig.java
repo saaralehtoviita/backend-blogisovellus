@@ -25,43 +25,45 @@ public class WebSecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    //url-tasolla määritelty pääsy eri osoitteisiin
+    //tällä hetkellä kaikki rest-palvelut julkisia, en saanut postmanin autentikointia toimimaan
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(
-            authorize -> authorize
-            .requestMatchers(HttpMethod.POST, "/test").permitAll()
-            .requestMatchers("/css/**").permitAll() //tyylitiedostot julkisia kaikille - muuten tyylit ei näy!
-            .requestMatchers(HttpMethod.GET, "/posts/**").permitAll() //sallitaan kaikille pääsy postausten json listaukseen
-            .requestMatchers(HttpMethod.GET, "/postkeywords**").permitAll() //sallitaan kaikille pääsy postkeywordsien json listaukseen
-            .requestMatchers(HttpMethod.GET, "/keywords**").permitAll() //sallitaan kaikille pääsy keywordsien json listaukseen
-            .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/users/**").permitAll()
-            .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/posts**").permitAll()
-            .requestMatchers(HttpMethod.PUT, "/posts/**").permitAll()
-            .requestMatchers(HttpMethod.DELETE, "/posts/**").permitAll()
-            .requestMatchers(HttpMethod.DELETE, "/keywords/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/postlist/**").permitAll() //kaikille näkyvä sivu
-            .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll() //kaikille näkyvä sivu
-            .requestMatchers(HttpMethod.GET, "/postlistKw/**").permitAll() //kaikille näkyvä sivu
-            .requestMatchers(HttpMethod.POST, "/addPost").hasAuthority("USER") //vain sisäänkirjautuneet käyttäjät
-            .requestMatchers(HttpMethod.GET, "/postlist_username").hasAuthority("USER") //vain sisäänkirjautuneet käyttäjät
-            .requestMatchers(HttpMethod.POST, "/editPost").hasAnyAuthority("USER", "ADMIN") //sekä adminit että userit
-            .requestMatchers(HttpMethod.POST, "/postlistEdit").hasAuthority("ADMIN") //vain adminit
-            .requestMatchers("/h2-console/").permitAll()
-            .anyRequest().authenticated()) //tekee postmaniin login-toiminnon
-            //.httpBasic(Customizer.withDefaults())
-            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions
+        http
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/css/**").permitAll() //tyylitiedostot julkisia kaikille - muuten tyylit ei näy!
+/*              .requestMatchers(HttpMethod.GET, "/api/users/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/users/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/posts**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.PUT, "/api/posts/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/posts/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/keywords/**").hasAuthority("ADMIN") */
+/*                .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll() 
+                .requestMatchers(HttpMethod.GET, "/api/postkeywords**").permitAll() 
+                .requestMatchers(HttpMethod.GET, "/api/keywords**").permitAll()  */
+                .requestMatchers("/api/**").permitAll()
+            
+                .requestMatchers(HttpMethod.GET, "/postlist/**").permitAll() //kaikille näkyvä sivu
+                .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll() //kaikille näkyvä sivu
+                .requestMatchers(HttpMethod.GET, "/postlistKw/**").permitAll() //kaikille näkyvä sivu
+                .requestMatchers(HttpMethod.POST, "/addPost").hasAuthority("USER") //vain sisäänkirjautuneet käyttäjät
+                .requestMatchers(HttpMethod.GET, "/postlist_username").hasAuthority("USER") //vain sisäänkirjautuneet käyttäjät
+                .requestMatchers(HttpMethod.POST, "/editPost").hasAnyAuthority("USER", "ADMIN") //sekä adminit että userit
+                .requestMatchers(HttpMethod.POST, "/postlistEdit").hasAuthority("ADMIN") //vain adminit
+                .requestMatchers("/h2-console/").permitAll()
+                .anyRequest().authenticated()) //tekee postmaniin login-toiminnon
+                //.httpBasic(Customizer.withDefaults())
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions
                 .disable())) //h2-konsoli ei toimi ilman tätä
-            .formLogin(formlogin -> formlogin //springin default-kirjautumissivu
+                .formLogin(formlogin -> formlogin //springin default-kirjautumissivu
                 //.defaultSuccessUrl("/postlistEdit", true) //mihin tullaan onnistuneen kirjautumisen jälkeen
                 .successHandler(customSuccessHandler()) //mihin tullaan onnistuneen sisäänkirjautumisen jälkeen 
                                                         //määritelty erillisessä luokassa
                 .permitAll())
-            //.logout(logout -> logout.permitAll())
-            .logout(logout -> logout.logoutSuccessUrl("/postlist")) //mihin tullaan uloskirjauksen jälkeen
-            .csrf(csrf -> csrf.disable()); 
+                //.logout(logout -> logout.permitAll())
+                .logout(logout -> logout.logoutSuccessUrl("/postlist")) //mihin tullaan uloskirjauksen jälkeen
+                .csrf(csrf -> csrf.disable()); 
 
         return http.build();
 
