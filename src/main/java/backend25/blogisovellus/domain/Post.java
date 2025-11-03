@@ -31,7 +31,7 @@ import jakarta.validation.constraints.Size;
 @Table(name="POSTS")
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="post_id")
     private Long postId;
 
@@ -51,7 +51,7 @@ public class Post {
     private Set<PostKeyword> postKeywords = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name="appuser_id")
+    @JoinColumn(name="user_id")
     @JsonIgnore
     private AppUser writer;
 

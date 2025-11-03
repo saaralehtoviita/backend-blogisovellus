@@ -12,11 +12,11 @@ import jakarta.persistence.Table;
 public class Keyword {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="keyword_id")
     private Long keywordId;
 
-    @Column(name="ste_keyword")
+    @Column(name="str_keyword")
     private String strKeyword;
 
     public Keyword() {}

@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 @Table(name="USERS")
 public class AppUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) //id generoidaan automaattisesti tietokantaan
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //id generoidaan automaattisesti tietokantaan
     @Column(name="user_id")
     private Long userId;
 

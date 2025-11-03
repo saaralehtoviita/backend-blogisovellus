@@ -26,7 +26,7 @@ public class BlogisovellusApplication {
 
 	//demodataa luodaan CommandLineRunnerilla
 
-	@Bean
+/* 	@Bean
 	public CommandLineRunner blogCommandLineRunner(PostRepository pRepo, AppUserRepository uRepo, KeywordRepository kRepo, PostKeywordRepository pkRepo) {
 		return (args) -> {
 	//avainsanojen luominen ja tallentaminen repoon
@@ -87,7 +87,7 @@ public class BlogisovellusApplication {
 	pkRepo.save(new PostKeyword(post5, injury));
 	pkRepo.save(new PostKeyword(post5, injuryPrevention));
 	};
-	}
+	} */
 
 
 }
