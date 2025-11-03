@@ -7,19 +7,20 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-//import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import backend25.blogisovellus.domain.Post;
 //import backend25.blogisovellus.domain.PostKeywordRepository;
 import backend25.blogisovellus.domain.PostRepository;
 
 //annotaatio ajonaikaisen tietokannan (h2) käytön testaamista varten 
-@DataJpaTest
+//@DataJpaTest
 
-//@SpringBootTest
+@SpringBootTest
 //annotaatio, kun testataan ulkoista tietokantaa:
-// @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class BlogisovellusRepositoryTestsJPA {
 
     @Autowired
