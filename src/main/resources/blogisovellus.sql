@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS USERS;
-DROP TABLE IF EXISTS KEYWORDS;
-DROP TABLE IF EXISTS POSTS;
-DROP TABLE IF EXISTS POST_KEYWORD;
+DROP TABLE IF EXISTS USERS CASCADE;
+DROP TABLE IF EXISTS KEYWORDS CASCADE;
+DROP TABLE IF EXISTS POSTS CASCADE;
+DROP TABLE IF EXISTS POST_KEYWORD CASCADE;
 
 CREATE TABLE USERS (
 user_id BIGSERIAL PRIMARY KEY,
@@ -20,7 +20,7 @@ str_keyword VARCHAR(250)
 CREATE TABLE POSTS (
 post_id BIGSERIAL PRIMARY KEY,
 title VARCHAR(250) NOT NULL,
-post_text VARCHAR(250) NOT NULL,
+post_text TEXT NOT NULL,
 post_date VARCHAR(250) NOT NULL,
 user_id BIGINT REFERENCES USERS(user_id)
 );
@@ -38,15 +38,6 @@ VALUES('Testi', 'Testinen', 'user', '$2a$10$91d8dtRJvcEbqonif/vtKuod24Sudu4OVfLB
 
 select * from USERS;
 
-DELETE FROM USERS where user_id=2;
-
-select * from USERS;
-
-DELETE FROM USERS where user_id=4;
-DELETE FROM USERS where user_id=5;
-
-select * from USERS;
-
 INSERT INTO KEYWORDS (str_keyword) 
 VALUES('knee'),
 ('shoulder'),
@@ -58,12 +49,14 @@ VALUES('knee'),
 
 select * from KEYWORDS;
 
+select * from USERS;
+
 INSERT INTO POSTS (title, post_text, post_date, user_id)
-VALUES('Injuries in Crosssfit', 'Blog text 1.', '23.9.2025', 6),
+VALUES('Injuries in Crosssfit', 'Blog text 1.', '23.9.2025', 3),
 ('Shoulder rehabilitation', 'Blog text 2.', '24.9.2025', 1),
-('Ankle rehabilitation', 'Blog text 3', '25.9.2025', 6),
+('Ankle rehabilitation', 'Blog text 3', '25.9.2025', 3),
 ('Polvivammat', 'Blog text 4', '26.9.2025', 1),
-('How to prevent injuries in Crossfit?', 'Blog text 5', '25.9.2025', 6);
+('How to prevent injuries in Crossfit?', 'Blog text 5', '25.9.2025', 3);
 
 select * from POSTS;
 select * from KEYWORDS;
@@ -75,8 +68,6 @@ VALUES(1, 3), (1, 5),
 (4, 5), (4, 1),
 (5, 3), (5, 5), (5, 7);
 
-select * from POSTS where post_id=1;
-
 
 select * from POSTS where post_id IN (
 select post_id from POST_KEYWORD where keyword_id=(
@@ -84,9 +75,6 @@ select keyword_id from KEYWORDS where str_keyword='crossfit'
 )
 );
 
-select p.title from POSTS p
-JOIN POST_KEYWORD pk on p.post_id = pk.post_id
-JOIN KEYWORDS k on pk.keyword_id = k.keyword_id
-WHERE k.str_keyword = 'crosssfit';
-
 select * from posts;
+
+select * from users;

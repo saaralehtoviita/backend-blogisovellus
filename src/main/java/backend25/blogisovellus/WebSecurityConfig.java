@@ -51,7 +51,8 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/postlist_username").hasAuthority("USER") //vain sisäänkirjautuneet käyttäjät
                 .requestMatchers(HttpMethod.POST, "/editPost").hasAnyAuthority("USER", "ADMIN") //sekä adminit että userit
                 .requestMatchers(HttpMethod.POST, "/postlistEdit").hasAuthority("ADMIN") //vain adminit
-                .requestMatchers("/h2-console/").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "postlistEdit").hasAnyAuthority("ADMIN")
+                //.requestMatchers("/h2-console/").permitAll()
                 .anyRequest().authenticated()) //tekee postmaniin login-toiminnon
                 //.httpBasic(Customizer.withDefaults())
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions
