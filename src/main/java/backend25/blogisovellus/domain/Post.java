@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+//import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +32,7 @@ import jakarta.validation.constraints.Size;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="post_id")
     private Long postId;
 
     @NotEmpty(message = "Name of post cannot be empty")
@@ -39,8 +41,10 @@ public class Post {
 
     @NotEmpty(message = "Text field cannot be empty")
     @Size(min = 1, max = 2000)
+    @Column(name="post_text")
     private String text;
 
+    @Column(name="post_date")
     private String postDate;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

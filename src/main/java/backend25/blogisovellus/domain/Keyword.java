@@ -1,5 +1,6 @@
 package backend25.blogisovellus.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,8 +13,10 @@ public class Keyword {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="keyword_id")
     private Long keywordId;
 
+    @Column(name="ste_keyword")
     private String strKeyword;
 
     public Keyword() {}

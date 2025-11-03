@@ -17,17 +17,23 @@ import jakarta.persistence.Table;
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO) //id generoidaan automaattisesti tietokantaan
+    @Column(name="user_id")
     private Long userId;
 
+    @Column(name="first_name")
     private String firstName;
 
+    @Column(name="last_name")
     private String lastName;
 
-    @Column(unique= true)
+
+    @Column(unique= true, name="user_name")
     private String userName;
 
+    @Column(name="password_hashed")
     private String passwordHashed;
 
+    @Column(name="app_role")
     private String role;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "writer")
