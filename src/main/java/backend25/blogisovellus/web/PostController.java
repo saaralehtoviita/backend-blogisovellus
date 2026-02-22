@@ -1,5 +1,6 @@
 package backend25.blogisovellus.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 //import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,15 +21,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import backend25.blogisovellus.domain.AppUser;
 import backend25.blogisovellus.domain.AppUserRepository;
+import backend25.blogisovellus.domain.Image;
+import backend25.blogisovellus.domain.ImageRepository;
 import backend25.blogisovellus.domain.Keyword;
 import backend25.blogisovellus.domain.KeywordRepository;
 import backend25.blogisovellus.domain.Post;
 import backend25.blogisovellus.domain.PostKeyword;
 import backend25.blogisovellus.domain.PostKeywordRepository;
 import backend25.blogisovellus.domain.PostRepository;
+import backend25.blogisovellus.service.ImageService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
@@ -35,7 +41,9 @@ import org.springframework.security.core.Authentication;
 @Controller
 public class PostController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PostController.class);
+    private final ImageService imageService;
+
+    //private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
     //rajapintojen injektointi, tarvitaan, jotta tiedot tallentuvat tietokantaan
 
@@ -43,12 +51,17 @@ public class PostController {
     private KeywordRepository kRepo;
     private PostKeywordRepository pAndKRepo;
     private AppUserRepository uRepo;
+    private ImageRepository iRepo;
 
-    public PostController(PostRepository pRepo, KeywordRepository kRepo, PostKeywordRepository pAndKRepo, AppUserRepository uRepo) {
+    public PostController(ImageService imageService, PostRepository pRepo, 
+    KeywordRepository kRepo, PostKeywordRepository pAndKRepo, AppUserRepository uRepo,
+    ImageRepository iRepo) {
+        this.imageService = imageService;
         this.pRepo = pRepo;
         this.kRepo = kRepo;
         this.pAndKRepo = pAndKRepo;
         this.uRepo = uRepo;
+        this.iRepo = iRepo;
     }
 
     //KAIKILLE KÄYTTÄJILLE
@@ -69,10 +82,19 @@ public class PostController {
 
     //yksittäisen postauksen näyttäminen, sisältö vaihtuu postauksen id:n mukaan
     //modelilla välitetään selaimelle preposta löytyvä postaus nimellä post 
+    @Transactional
     @GetMapping("/post/{id}")
     public String showPost(@PathVariable Long id, Model model) {
         Post postaus = pRepo.findById(id).orElse(null);
+
+    if (postaus == null) {
+            return "redirect:/postlist";
+        } 
+        List<Image> images = iRepo.findByPostPostId(id);
+        System.out.println("Löytyi" + images.size() + "kuvaa postaukselle" + id);
+
         model.addAttribute("post", postaus);
+        model.addAttribute("images", images);
         return "post";
     }
 
@@ -121,6 +143,7 @@ public class PostController {
 
     //SISÄÄNKIRJAUTUNEILLE KÄYTTÄJILLE
 
+    //tätä metodia ei piilotettu - mahdollistaa myöhemmin käyttäjänimellä hakemisen
     @GetMapping("/postlist_username/{userName}")
     public String showPostsByUserName(@PathVariable String userName, Model model) {
         //String userName = authentication.getName();
@@ -130,8 +153,7 @@ public class PostController {
     }
 
     //uusien postausten lisääminen
-    //muutetaan jossain vaiheessa sellaiseksi, että vain sisäänkirjautuneet käyttäjät pääsevät lisäämään postauksia
-    //model-olion avulla välitetään selaimelle (thymeleaf) uusi Post olio (nimellä post)
+    //model-olion avulla välitetään selaimelle (thymeleaf) uusi Post olio (nimellä post) +  uusi keyword olio +  uusi image olio
     //samalla tavalla välitetään koko krepon sisältö selaimelle nimellä keywords
     //addPost ei vielä tallenna mitään
     @RequestMapping("/addPost")
@@ -139,19 +161,21 @@ public class PostController {
     public String addPost(Model model) {
         model.addAttribute("post", new Post());
         model.addAttribute("keyword", new Keyword());
+        model.addAttribute("image", new Image());
         model.addAttribute("keywords", kRepo.findAll());
         return "addPost";
     }
     //valid + bindingresult tutkivat, rikkooko tallentumassa oleva postaus sääntöjä 
     @PostMapping("/savePost")
     @PreAuthorize("hasAuthority('USER')")
-    public String savePost(@Valid @ModelAttribute("post") Post post, BindingResult br, Authentication authentication) {
+    public String savePost(@Valid @ModelAttribute("post") Post post, BindingResult br,
+     @RequestParam("files") List<MultipartFile> files, 
+    Authentication authentication) {
         if (br.hasErrors()) {
             return "addPost";
-        }
+        } 
         //haetaan sisäänkirjautuneen käyttäjän tiedot authentication avulla
         //asetetaan tiedot kirjoittajalle
-        //jos kirjoittajaa ei löydy -> virheilmoitus
         String username = authentication.getName();
         AppUser writer = uRepo.findByUserName(username).orElseThrow(() ->
         new IllegalStateException("User not found: " + username));
@@ -167,12 +191,18 @@ public class PostController {
         //tallennetaan ensin post-olio repoon ilman avainsanoja
         pRepo.save(post);
 
+        //tallenetaan kuvat imageServicen kautta
+        try {
+        imageService.saveImages(files, post);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //avainsanojen lisääminen
         //käyttäjän antamasta syötteestä tehdään merkkijonotaulukko, pilkku erottimena
-        //poistetaan tyhjät ja muutetaan pieneksi
         String[] keywords = post.getKeywordInput().split(",");
         for (String k : keywords) {
-            String newKw = k.trim().toLowerCase();
+            String newKw = k.trim().toLowerCase(); //poistetaan tyhjät ja muutetaan pieneksi
 
             //tarkistetaan, löytyykö sana jo keyword reposta
             //jos ei löydy, tehdään uusi sana ja tallennetaan repoon
@@ -191,11 +221,17 @@ public class PostController {
         return "redirect:/postlist_username/" + writer.getUserName();     
     }
 
+    @GetMapping("/images/{id}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getImage(@PathVariable("id") Long id) {
+    return imageService.getImage(id);
+    }
+
     //postauksen editoiminen, tämä ei vielä tallenna postausta vaan avaa lomakkeen 
     //oikea post-olio haetaan id:n perusteella
     @RequestMapping("/editPost/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')") //anyauthority mahdollistaa useamman roolin
-    public String editPost(@PathVariable Long id, Model model, Authentication authentication) {
+    public String editPost(@PathVariable("id") Long id, Model model, Authentication authentication) {
         //tarkistetaan id:n perusteella löytyyko postaus reposta
         Post post = pRepo.findById(id).orElse(null);
         if (post == null) {
@@ -203,7 +239,9 @@ public class PostController {
         }
 
         //tarkastetaan, onko kirjautuneella käyttäjällä admin rooli
-        boolean isAdmin = authentication.getAuthorities().stream()
+        boolean isAdmin = authentication
+            .getAuthorities()
+            .stream()
             .anyMatch(a -> a.getAuthority().equals("ADMIN"));
         //tehdään merkkijono autentikoidun/(sisäänkirjautuneen) käyttäjän tunnuksesta
         String currUser = authentication.getName();
@@ -291,7 +329,6 @@ public class PostController {
     //METODIT ADMIN OIKEUKSILLE:
 
     //postauksen poistaminen
-    //muista vaihtaa oikeudet vain adminille!
 
     @PostMapping("/deletePost/{id}")
     @PreAuthorize("hasAuthority('ADMIN')") //postgren kanssa hasRole
@@ -301,6 +338,7 @@ public class PostController {
         return "redirect:/postlistEdit";
     }
 
+    //näkymä admin käyttäjälle 
     @GetMapping("/postlistEdit")
     @PreAuthorize("hasAuthority('ADMIN')")
     public String postListEdit(Model model) {

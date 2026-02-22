@@ -12,7 +12,29 @@
     <h1 th:text="${post.title}"></h1>
     <p><strong>Date:</strong> <span th:text="${post.postDate}"></span></p>
     <hr>
+
+    <div th:if="${images.size() == 1}">
+    <!-- Yksi kuva → näytetään kuvan yläpuolella -->
+    <img th:src="@{'/images/' + ${images[0].imgId}}" alt="Post image" class="postImage mb-3">
     <p th:utext="${post.text}"></p>
+</div>
+
+<div th:if="${images.size() > 1}" class="row">
+    <!-- Useampi kuva → vasen kolumni kuville, oikea kolumni tekstille -->
+    <div class="col-12 col-md-4">
+        <div th:each="img : ${images}">
+            <img th:src="@{'/images/' + ${img.imgId}}" alt="Post image" class="postImage mb-2">
+        </div>
+    </div>
+    <div class="col-12 col-md-8">
+        <p th:utext="${post.text}"></p>
+    </div>
+</div>
+
+<div th:if="${images.size() == 0}">
+    <!-- Ei kuvia -->
+    <p th:utext="${post.text}"></p>
+</div>
     <p><strong>Writer: </strong><span th:text="${post.writer.lastName + ', ' + post.writer.firstName}"></span></p>
 
     <p><strong>Keywords:</strong> 

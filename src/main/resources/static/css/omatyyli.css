@@ -289,5 +289,13 @@ footer .social-media .youtube-link:hover {
     padding: 3px;
 }
 
+/*postauksen kuva*/ 
+
+.postImage {
+    border-radius: 3%;
+    width: 100%;
+    margin: 15px 1px;
+}
+
 
 

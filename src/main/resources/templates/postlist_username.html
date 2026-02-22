@@ -10,7 +10,7 @@
     <script src="/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
-<!--Blogipostaukset käyttäjätunnuksen mukaan-->
+<!--Blogipostaukset käyttäjätunnuksen mukaan. Sivu avautuu vain sisäänkirjautuneille käyttäjille-->
 <body class="ml-4 mt-4">
     <h1 class="mt-4">Blogposts by <i sec:authentication="name"></i></h1>
     <p>Welcome user <i sec:authentication="name"></i>! On this page you can  see a list of your own posts and edit them.</p>

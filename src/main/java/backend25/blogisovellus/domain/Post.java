@@ -40,7 +40,7 @@ public class Post {
     private String title;
 
     @NotEmpty(message = "Text field cannot be empty")
-    @Size(min = 1, max = 2000)
+    @Size(min = 1, max = 5000)
     @Column(name="post_text")
     private String text;
 
@@ -54,6 +54,9 @@ public class Post {
     @JoinColumn(name="user_id")
     @JsonIgnore
     private AppUser writer;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Image> images;
 
 /*     @NotEmpty(message = "A post must have at least one keyword")
     @Size(min = 1, max = 250) */
@@ -154,6 +157,15 @@ public class Post {
         this.writer = writer;
     }
 
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
+
+
     public List<String> getKeywordsAsStringList() {
         List<String> keywordsList = new ArrayList<>();
             for (PostKeyword pk : postKeywords) {
@@ -169,4 +181,6 @@ public class Post {
             }
         return String.join(", ", keywords);
     }
-}
+    }
+
+

@@ -13,8 +13,8 @@ Käyttäjä kirjoittaa ja tallentaa tällä sivulla uusia postauksia-->
     <h1>New Blogpost</h1>
     <p>Please, write your post in the form below. If you want your text to be <strong>bold</strong> or <i>italic</i>, use the following syntax: <br>
     **content you want bolded**.<br>
-    _content you want italic_</p>
-    <form th:object="${post}" th:action="@{/savePost}" action="#" method="post">
+    __content you want italic__</p>
+    <form th:object="${post}" th:action="@{/savePost}" action="#" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title">Title of Post:</label>
                 <input type="text" id="title" th:field="*{title}" />
@@ -22,13 +22,18 @@ Käyttäjä kirjoittaa ja tallentaa tällä sivulla uusia postauksia-->
         </div>
 
         <div class="mb-3">
-            <label for="text">Content:</label>
+            <label for="text">Content: </label>
                 <textarea id="text" th:field="*{text}" class="form-control w-75" rows="15"></textarea>
                     <div th:if="${#fields.hasErrors('text')}" th:errors="*{text}" class="text-danger">Error</div>
         </div>
 
         <div class="mb-3">
-            <label>Keywords, separated with comma:</label>
+            <label>Pictures: </label>
+            <input type="file" name="files" multiple>
+        </div>
+
+        <div class="mb-3">
+            <label for="keywordInput">Keywords, separated with comma:</label>
             <input type="text" th:field="*{keywordInput}" required class="form-control w-75">
                 <!-- tämä tapa ei transient annotaation kanssa toimi:
             <div th:if="${#fields.hasErrors('keywordInput')}" th:errors="*{keywordInput}" class="text-danger">Error</div> -->

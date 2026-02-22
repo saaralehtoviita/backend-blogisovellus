@@ -44,6 +44,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/keywords**").permitAll()  */
                 .requestMatchers("/api/**").permitAll()
             
+                .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/postlist/**").permitAll() //kaikille näkyvä sivu
                 .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll() //kaikille näkyvä sivu
                 .requestMatchers(HttpMethod.GET, "/postlistKw/**").permitAll() //kaikille näkyvä sivu
