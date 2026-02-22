@@ -23,7 +23,7 @@ The main users of the application are the blog post writer, the blog post reader
 The application is not deployed yet. To run the application, the project needs to be downloaded and run locally. 
 
 ### Technologies 
-The application has been programmed with Java and the framework used is Spring Boot. The front end part is done with Thymeleaf and Bootstrap. This versioon of the application is using Postgre as a database, but the database can be changed to the runtime H2-database with activating the correct profile from the application properties files. 
+The application has been programmed with Java and the framework used is Spring Boot. The front end part is done with Thymeleaf and Bootstrap. This version of the application is using Postgre as a database, but the database can be changed to the runtime H2-database with activating the correct profile from the application properties files. 
 
 
 
